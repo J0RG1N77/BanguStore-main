@@ -1,0 +1,85 @@
+.steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin: 20px 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #bbb;
+  font-size: 14px;
+}
+
+.step .icon {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+.step.active {
+  color: #2ecc71; /* Verde para ativo */
+  font-weight: bold;
+}
+
+.line {
+  flex: 1;
+  height: 4px;
+  background: #ccc;
+  border-radius: 2px;
+}
+.carrinho-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.carrinho-tabela th,
+.carrinho-tabela td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.carrinho-tabela th {
+  background: #f5f5f5;
+  font-weight: bold;
+}
+
+.qtd-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.qtd-controls button {
+  padding: 5px 10px;
+  border: none;
+  background: #eee;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.2s;
+}
+
+.qtd-controls button:hover {
+  background: #ccc;
+}
+
+.remover-item {
+  background: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.remover-item:hover {
+  background: darkred;
+}
+
+
+

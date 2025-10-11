@@ -1,0 +1,199 @@
+/* Estilos globais */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Tema claro (com degradê) */
+body.light-theme {
+  background: linear-gradient(to bottom, #ffffff, #f2f2f2);
+  color: #000000;
+}
+
+/* Tema escuro */
+body.dark-theme {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+/* Garante que links e elementos específicos sejam afetados */
+body.dark-theme p, 
+body.dark-theme span {
+  color: #ffffff !important;
+}
+
+/* Estilo para hover de links no tema escuro */
+body.dark-theme a:hover {
+  color: #cccccc !important;
+}
+
+/* Cabeçalho */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: linear-gradient(to right, #ff0000, #0000ff);
+  color: white;
+  transition: background 0.3s ease;
+}
+
+/* Cabeçalho no tema escuro */
+body.dark-theme header {
+  background: linear-gradient(to right, #1a1a1a, #333333);
+}
+
+/* Botão de alternar tema */
+#theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
+  transition: transform 0.2s ease;
+}
+
+#theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+.logo img {
+  max-width: 80px;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 15px;
+}
+
+nav ul li {
+  display: inline;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: white;
+  padding: 10px 15px;
+  transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+  background-color: #C62828;
+  border-radius: 4px;
+}
+
+.user-options {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  list-style-type: none;
+}
+
+.user-options a {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+}
+
+.user-options a i {
+  font-size: 30px;
+  color: white;
+}
+
+/* Seção Sobre */
+.sobre-section {
+  max-width: 900px;
+  margin: 80px auto;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-theme .sobre-section {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+.sobre-section h2 {
+  color: #E53935; 
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.sobre-section p {
+  font-size: 1.2em;
+  color: #666;
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
+body.dark-theme .sobre-section p {
+  color: #ddd;
+}
+
+/* Imagens na seção sobre */
+.sobre-imagens {
+  display: flex;
+  justify-content: space-between;
+  margin: 40px 0;
+}
+
+.sobre-imagens img {
+  width: 30%;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Rodapé */
+footer {
+  background-color: #D62828; 
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  font-size: 1.1em;
+  transition: background-color 0.3s;
+}
+
+body.dark-theme footer {
+  background-color: #2a2a2a;
+}
+
+.quem-somos-nos-section {
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.quem-somos-nos-section h2 {
+  font-size: 2.5em;
+  color: #800000; /* Vermelho Bangu */
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.quem-somos-nos-section p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  color: #333;
+  max-width: 800px;
+  margin: 0 auto 15px auto;
+}
+
+.quem-somos-nos-section p strong {
+  color: #800000;
+}

@@ -1,0 +1,12 @@
+-- Criação da tabela usuarios (mesma estrutura de clientes)
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_completo VARCHAR(255) NOT NULL,
+    data_nascimento DATE,
+    sexo VARCHAR(20),
+    cpf VARCHAR(14) NOT NULL UNIQUE,
+    celular VARCHAR(15),
+    login VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

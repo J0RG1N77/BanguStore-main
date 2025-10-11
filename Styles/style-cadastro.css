@@ -1,0 +1,253 @@
+/* Reset some default styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(to bottom, #d62828, #ff5f5f);
+    transition: background 0.3s ease;
+    flex-direction: column;
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 151vh;
+}
+
+/* Tema Claro */
+body.light-theme {
+    background: linear-gradient(135deg, #f4f4f9, #d62828); /* Degradê claro */
+    color: #333;
+}
+
+/* Tema Escuro */
+body.dark-theme {
+    background-color: #121212; /* Fundo sólido escuro */
+    color: #e0e0e0;
+}
+
+/* Cabeçalho */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(to right, #ff0000, #0000ff);
+    color: white;
+    transition: background 0.3s ease;
+}
+
+/* Cabeçalho no tema escuro */
+body.dark-theme header {
+    background: linear-gradient(to right, #1a1a1a, #333333);
+}
+
+/* Estilo para o modo escuro */
+body.dark-theme .main-cadastro {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-theme a,
+body.dark-theme p,
+body.dark-theme span {
+    color: #e0e0e0 !important;
+}
+
+/* Botão de toggle */
+#theme-toggle {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: white;
+    transition: transform 0.2s ease;
+}
+
+#theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* Navegação */
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    padding: 10px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+    background-color: #c62828;
+    border-radius: 4px;
+}
+
+.user-options {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-options a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+}
+
+.user-options a i {
+    font-size: 30px;
+}
+
+/* Espaço abaixo do cabeçalho */
+.spacer {
+    height: 70px;
+}
+
+/* Tela de Cadastro */
+.main-cadastro {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    padding: 40px 0 40px 0;
+    min-height: 100vh;
+}
+
+/* Container do formulário */
+.outer-container {
+    width: 100%;
+    max-width: 650px;
+    min-height: 520px;
+    border-radius: 24px;
+    background: #fefefe;
+    padding: 50px 50px 40px 50px;
+    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.13);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+    margin: 0 auto;
+    transition: max-width 0.3s, padding 0.3s;
+}
+
+.outer-container h1 {
+    color: #333;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+/* Formulário de Cadastro */
+.form-container {
+    flex-grow: 1;
+    margin-bottom: 20px;
+    padding-right: 10px;
+}
+
+.textfield {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.textfield label {
+    margin-bottom: 10px;
+    color: #555;
+    font-weight: 600;
+}
+
+.textfield input,
+.textfield select {
+    width: 100%;
+    padding: 15px;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #333;
+    font-size: 14px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+.textfield input:focus,
+.textfield select:focus {
+    border-color: #d87c7c;
+    box-shadow: 0px 0px 6px rgba(216, 124, 124, 0.6);
+}
+
+.textfield input::placeholder,
+.textfield select::placeholder {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+/* Botões */
+.botoes {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.btn-cadastro {
+    width: 200px;
+    padding: 12px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background-color: #d62828;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0px 8px 20px rgba(167, 106, 74, 0.5);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.btn-cadastro:hover {
+    background-color: #a91c1c;
+    box-shadow: 0px 10px 20px rgba(216, 124, 124, 0.5);
+}
+
+/* Feedback Message */
+.feedback-message {
+    position: fixed;
+    top: 185px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 1000;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    display: none;
+}
+
+.feedback-message.error {
+    background-color: #d87c7c;
+    color: #fff;
+}
+
+.feedback-message.success {
+    background-color: #4CAF50;
+    color: #fff;
+}

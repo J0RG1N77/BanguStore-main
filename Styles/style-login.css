@@ -1,0 +1,367 @@
+/* Estilos Globais */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+    box-sizing: border-box;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Tema Claro com Degradê */
+.light-theme {
+    background: linear-gradient(to bottom, #ffffff, #f2f2f2);
+    color: #333;
+}
+
+/* Tema Escuro */
+.dark-theme {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.dark-theme a,
+.dark-theme p,
+.dark-theme span,
+.dark-theme label {
+    color: #e0e0e0 !important;
+}
+
+/* Tela de Login */
+.main-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    background: linear-gradient(to bottom, #d62828, #ff5f5f);
+    transition: background 0.3s ease;
+    flex-direction: column;
+}
+
+.dark-theme .main-login {
+    background: linear-gradient(to bottom, #1a1a1a, #333);
+}
+
+.main-login > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    flex-direction: column;
+}
+
+/* Ajustes específicos para a página de login: evitar scroll vertical e centralizar formulário */
+body.login {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Cabeçalho */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: linear-gradient(to right, #ff0000, #0000ff);
+  color: white;
+  transition: background 0.3s ease;
+}
+
+/* Cabeçalho no tema escuro */
+body.dark-theme header {
+  background: linear-gradient(to right, #1a1a1a, #333333);
+}
+
+/* Faz o container principal usar o espaço restante da viewport */
+.main-login {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 24px;
+    flex-direction: column; /* empilha a logo acima do formulário */
+}
+
+/* Left Login */
+.left-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 32px;
+    color: #fff;
+}
+
+.left-login h1 {
+    font-size: 20px;
+    color: #fff;
+    text-align: center;
+}
+
+/* Reduz o tamanho da logo do lado esquerdo acima do formulário */
+.left-login .logo img {
+    width: 120px;
+    height: auto;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Right Login */
+.right-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card de Login */
+.card-login {
+    width: 100%;
+    max-width: 400px;
+    background: #fefefe;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.dark-theme .card-login {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+
+.card-login h1 {
+    color: #d62828;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Centralizar campos de input dentro do cartão */
+.card-login {
+    align-items: center; /* mantém o cartão centrado na página */
+    text-align: center; /* título do cartão continua centralizado */
+}
+
+.textfield {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* alinha label e input ao início da coluna */
+    margin: 8px 0;
+}
+
+.textfield label {
+    width: 90%;
+    max-width: 320px;
+    margin: 0 auto 6px auto; /* mantém alinhamento horizontal com o input */
+    text-align: left; /* label à esquerda, acima do campo */
+}
+
+.textfield input {
+    width: 90%;
+    max-width: 320px;
+    box-sizing: border-box;
+    margin: 0 auto 8px auto; /* input permanece centralizado dentro do cartão */
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    color: #333;
+    font-size: 14px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.dark-theme .textfield input {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    color: #e0e0e0;
+}
+
+.textfield input:focus {
+    background-color: #ffffff;
+    border-color: #d62828;
+    outline: none;
+}
+
+.dark-theme .textfield input:focus {
+    background-color: #333;
+    border-color: #ff4444;
+}
+
+/* Botões */
+.btn-enviar,
+.btn-cadastro {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #d62828;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-enviar:hover,
+.btn-cadastro:hover {
+    background-color: #a91c1c;
+    transform: translateY(-2px);
+}
+
+.btn-enviar:disabled,
+.btn-cadastro:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Feedback */
+.feedback-message {
+    padding: 10px;
+    margin-top: 15px;
+    text-align: center;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.feedback-message.error {
+    background-color: #d62828;
+    color: #fff;
+}
+
+.feedback-message.success {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+/* Responsividade */
+@media (max-width: 950px) {
+    .card-login {
+        width: 85%;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-login {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .left-login,
+    .right-login {
+        width: 100%;
+        height: auto;
+    }
+
+    .logo img {
+        max-width: 150px;
+    }
+}
+
+/* Ajustes responsivos: empilhar se tela pequena e manter sem scroll */
+@media (max-width: 900px) {
+    .main-login {
+        flex-direction: column;
+        gap: 16px;
+        padding-top: 20px;
+        min-height: calc(100vh - 72px);
+    }
+
+    .left-login {
+        order: -1; /* mostrar acima do cartão */
+    }
+
+    .left-login .logo img {
+        width: 100px;
+    }
+
+    .card-login {
+        max-width: 420px;
+        width: 92%;
+        padding: 22px;
+    }
+}
+
+/* Header com Degradê no Claro e Escuro */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(to right, #d62828, #0000ff);
+    color: white;
+    transition: background 0.3s ease;
+}
+
+.dark-theme header {
+    background: linear-gradient(to right, #1a1a1a, #333333);
+}
+
+#theme-toggle {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: white;
+    transition: transform 0.2s ease;
+}
+
+#theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* Navegação */
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    padding: 10px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+    background-color: #c62828;
+    border-radius: 4px;
+}
+
+.user-options {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-options a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+}
+
+.user-options a i {
+    font-size: 30px;
+}

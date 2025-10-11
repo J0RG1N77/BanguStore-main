@@ -1,0 +1,65 @@
+.promo-carousel {
+  position: relative;
+  max-width: 900px;
+  margin: 30px auto 50px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.promo-track {
+  display: flex;
+  transition: transform 0.7s ease;
+  width: 300%; /* 3 slides */
+}
+
+.promo-slide {
+  min-width: 100%;
+  user-select: none;
+  position: relative;
+}
+
+.promo-slide img {
+  
+  display: block;
+  height: 300px;
+  object-fit: cover;
+}
+
+.promo-caption {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.promo-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.promo-dots button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.promo-dots button.active {
+  background: #27ae60;
+}

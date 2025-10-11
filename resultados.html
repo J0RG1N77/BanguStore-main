@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados - Bangu Store</title>
+    <link rel="stylesheet" href="Styles/resultados.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="JavaScript/script.js"></script>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="logo">
+            <img src="img/Bangu_escudo2.png" alt="Bangu Atlético Clube">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="produtos.html">Produtos</a></li>
+                <li><a href="sobre.html">Sobre</a></li>
+                <li><a href="resultados.html" class="active">Resultados</a></li>
+            </ul>
+        </nav>
+        <div class="user-options">
+      <div class="account-container">
+        <button id="account-button" class="account-button" aria-haspopup="true" aria-expanded="false">Entrar</button>
+        <div id="account-dropdown" class="dropdown hidden" role="menu">
+          <ul>
+            <li id="manage-account" role="menuitem">Gerenciar Conta</li>
+            <li id="logout" role="menuitem" class="hidden">Sair</li>
+            <li id="login-link" role="menuitem"><a href="pag-login.html">Entrar / Cadastrar</a></li>
+          </ul>
+        </div>
+      </div>
+      <button id="theme-toggle">🌙</button>
+    </div>
+  </header>
+
+  <!-- Account styles & modal -->
+  <style>
+    .hidden{display:none!important}
+    .account-container{position:relative}
+    .account-button{background:#fff;border:1px solid #ddd;padding:8px 12px;border-radius:8px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;color:#111;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,0.06);transition:background .12s, box-shadow .12s, transform .06s}
+    .account-button:hover{background:#f7f7f7}
+    .dropdown{position:absolute;right:0;top:calc(100% + 8px);min-width:180px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,0.08);z-index:40}
+    .dropdown ul{list-style:none;margin:0;padding:0}
+    .dropdown li{padding:10px 14px;cursor:pointer;color:#000;border-radius:6px}
+    .dropdown li a{color:inherit;text-decoration:none;display:block}
+    .dropdown li:hover{background:#f5f5f5}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:50}
+    .modal .modal-content{background:#fff;padding:18px;border-radius:8px;max-width:520px;width:90%;box-shadow:0 10px 30px rgba(0,0,0,0.2);position:relative}
+    .modal .modal-content label{display:block;margin-bottom:8px;font-size:14px}
+    .modal .modal-content input{width:100%;padding:8px;margin-top:4px;border:1px solid #ccc;border-radius:6px}
+    .modal .modal-content .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .modal .modal-close{position:absolute;right:8px;top:6px;border:none;background:transparent;font-size:20px;cursor:pointer}
+  </style>
+
+  <div id="account-modal" class="modal hidden" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <button id="close-account-modal" class="modal-close" aria-label="Fechar">&times;</button>
+      <h2>Gerenciar Conta</h2>
+      <form id="account-form">
+        <label>Nome completo
+          <input id="modal-nome" name="nome" type="text" />
+        </label>
+        <label>LOGIN
+          <input id="modal-login" name="login" type="text" />
+        </label>
+        <label>Celular
+          <input id="modal-celular" name="celular" type="text" />
+        </label>
+        <label>Email
+          <input id="modal-email" name="email" type="email" />
+        </label>
+        <div class="modal-actions">
+          <button type="button" id="cancel-account">Cancelar</button>
+          <button type="submit" id="save-account">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    const accountButton = document.getElementById('account-button');
+    const accountDropdown = document.getElementById('account-dropdown');
+    const manageAccount = document.getElementById('manage-account');
+    const logoutItem = document.getElementById('logout');
+    const loginLink = document.getElementById('login-link');
+    const accountModal = document.getElementById('account-modal');
+    const closeModal = document.getElementById('close-account-modal');
+    const cancelAccount = document.getElementById('cancel-account');
+    const accountForm = document.getElementById('account-form');
+
+    // Synchronize client-side state with server session
+    (function syncCurrentUser(){
+      try{
+        fetch('php/current_user.php', { credentials: 'same-origin' })
+          .then(r => r.json())
+          .then(data => {
+            if (data && data.logged && data.user) {
+              const u = {
+                nomeCompleto: data.user.nome_completo || '',
+                email: data.user.email || '',
+                login: data.user.login || '',
+                celular: data.user.celular || ''
+              };
+              localStorage.setItem('usuario', JSON.stringify(u));
+              // loggedUser used by UI to indicate session
+              const loggedKey = (data.user.nome_completo && data.user.nome_completo.split(' ')[0]) || data.user.email || data.user.login || '';
+              if (loggedKey) localStorage.setItem('loggedUser', loggedKey);
+              else localStorage.removeItem('loggedUser');
+            } else {
+              localStorage.removeItem('loggedUser');
+            }
+            updateUIForUser();
+          })
+          .catch(err => {
+            console.warn('current_user fetch failed', err);
+            updateUIForUser();
+          });
+      }catch(e){
+        updateUIForUser();
+      }
+    })();
+
+    function getStoredUser(){
+      try{
+        const user = JSON.parse(localStorage.getItem('usuario')) || null;
+        const logged = localStorage.getItem('loggedUser');
+        if(!user) return null;
+        if(logged && (logged === user.email || logged === (user.nomeCompleto && user.nomeCompleto.split(' ')[0]) || logged === user.nomeCompleto)){
+          return user;
+        }
+        return null;
+      }catch(e){return null}
+    }
+
+    function setStoredUser(u){ localStorage.setItem('usuario', JSON.stringify(u)); }
+
+    function updateUIForUser(){
+      const user = getStoredUser();
+      if(user){
+        accountButton.textContent = user.nomeCompleto ? user.nomeCompleto.split(' ')[0] : user.email || 'Usuário';
+        logoutItem.classList.remove('hidden');
+        loginLink.classList.add('hidden');
+      } else {
+        accountButton.textContent = 'Entrar';
+        logoutItem.classList.add('hidden');
+        loginLink.classList.remove('hidden');
+      }
+    }
+
+    accountButton.addEventListener('click', (e)=>{
+      accountDropdown.classList.toggle('hidden');
+      accountButton.setAttribute('aria-expanded', String(!accountDropdown.classList.contains('hidden')));
+    });
+
+    document.addEventListener('click',(e)=>{
+      if(!e.target.closest('.account-container') && !e.target.closest('#account-dropdown')){
+        if(!accountDropdown.classList.contains('hidden')) accountDropdown.classList.add('hidden');
+      }
+    });
+
+    manageAccount.addEventListener('click', ()=>{
+      const user = getStoredUser();
+      if(!user){
+        // if no user registered, redirect to login
+        window.location.href = 'pag-login.html';
+        return;
+      }
+      // fill modal fields (removido modal-fixo)
+      document.getElementById('modal-nome').value = user.nomeCompleto || '';
+      document.getElementById('modal-login').value = user.login || '';
+      document.getElementById('modal-celular').value = user.celular || '';
+      document.getElementById('modal-email').value = user.email || '';
+
+      accountModal.classList.remove('hidden');
+      accountDropdown.classList.add('hidden');
+    });
+
+    closeModal.addEventListener('click', ()=> accountModal.classList.add('hidden'));
+    cancelAccount.addEventListener('click', ()=> accountModal.classList.add('hidden'));
+
+    accountForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const updated = {
+        nomeCompleto: document.getElementById('modal-nome').value.trim(),
+        login: document.getElementById('modal-login').value.trim(),
+        celular: document.getElementById('modal-celular').value.trim(),
+        email: document.getElementById('modal-email').value.trim()
+      };
+
+      fetch('php/update_user.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updated),
+        credentials: 'same-origin'
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setStoredUser(updated);
+          updateUIForUser();
+          accountModal.classList.add('hidden');
+          alert('Dados atualizados com sucesso.');
+        } else {
+          alert('Erro ao atualizar dados: ' + (data.message || 'Erro desconhecido.'));
+        }
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor.');
+      });
+    });
+
+    logoutItem.addEventListener('click', ()=>{
+      // chamar logout no servidor, limpar localStorage e sinalizar logout para outras abas
+      fetch('php/logout.php', { method: 'GET', credentials: 'same-origin' })
+        .finally(() => {
+          localStorage.removeItem('loggedUser');
+          localStorage.removeItem('usuario');
+          // sinaliza para outras abas
+          try { localStorage.setItem('loggedOut', String(Date.now())); } catch(e){}
+          updateUIForUser();
+          accountDropdown.classList.add('hidden');
+          alert('Você saiu da conta.');
+        });
+    });
+
+    // sincronizar logout entre abas
+    window.addEventListener('storage', function(e){
+      if (!e) return;
+      if (e.key === 'loggedOut' || e.key === 'loggedUser' || e.key === 'usuario') {
+        // atualizar UI automaticamente quando outra aba fez logout/login
+        updateUIForUser();
+      }
+    });
+
+    // initial UI setup
+    updateUIForUser();
+  })();
+  </script>
+
+
+    <!-- Seção Resultados -->
+    <section id="resultados" class="resultados-section">
+          
+    <!-- Banner -->
+      <div class="destaque-titulo">
+        <img src="img/campeao2025a2.jpg" alt="Bangu Campeão Série A2 2025">
+        <div>
+            <h3>Campeão Carioca Série A2 - 2025</h3>
+            <p>
+                O Bangu conquistou o título da Série A2 do Campeonato Carioca de 2025 ao vencer o São Gonçalo EC na final, garantindo o acesso à elite do futebol carioca!
+            </p>
+        </div>
+    </div>
+
+        <h2>Últimos Jogos do Bangu Atlético Clube</h2>
+
+            <!-- Destaque do último título -->
+
+        <table class="tabela-resultados">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Competição</th>
+                <th>Mandante</th>
+                <th></th>
+                <th>Visitante</th>
+                <th>Placar</th>
+                <th>Resultado</th>
+            </tr>
+        </thead>
+<tbody>
+    <tr>
+        <td>17/08/2025</td>
+        <td>Carioca Série A2</td>
+        <td><img src="img/times/União_Central_FC_escudo (1).png" alt="União Central" width="30"> União Central</td>
+        <td>X</td>
+        <td><img src="img/Bangu_escudo2.png" alt="Bangu" width="30"> Bangu</td>
+        <td>1 x 2</td>
+        <td><span style="color: #28a745; font-weight: bold;">Vitória</span></td>
+    </tr>
+    <tr>
+        <td>13/08/2025</td>
+        <td>Carioca Série A2</td>
+        <td><img src="img/Bangu_escudo2.png" alt="Bangu" width="30"> Bangu</td>
+        <td>X</td>
+        <td><img src="img/times/Escudo_do_S._Gonçalo_EC.png" alt="São Gonçalo EC" width="30"> São Gonçalo EC</td>
+        <td>1 x 0</td>
+        <td><span style="color: #28a745; font-weight: bold;">Vitória</span></td>
+    </tr>
+    <tr>
+        <td>09/08/2025</td>
+        <td>Carioca Série A2</td>
+        <td><img src="img/Bangu_escudo2.png" alt="Bangu" width="30"> Bangu</td>
+        <td>X</td>
+        <td><img src="img/times/150-1509083_araruama-rj-sombra-escudo-araruama-png.png" alt="Araruama" width="30"> Araruama</td>
+        <td>1 x 0</td>
+        <td><span style="color: #28a745; font-weight: bold;">Vitória</span></td>
+    </tr>
+    <tr>
+        <td>03/08/2025</td>
+        <td>Carioca Série A2</td>
+        <td><img src="img/times/150-1509083_araruama-rj-sombra-escudo-araruama-png.png" alt="Araruama" width="30"> Araruama</td>
+        <td>X</td>
+        <td><img src="img/Bangu_escudo2.png" alt="Bangu" width="30"> Bangu</td>
+        <td>0 x 0</td>
+        <td><span style="color: #ffc107; font-weight: bold;">Empate</span></td>
+    </tr>
+    <tr>
+        <td>30/07/2025</td>
+        <td>Copa Rio</td>
+        <td><img src="img/times/campo-grande-ac-rj-logo-png-transparent.png" alt="Campo Grande" width="30"> Campo Grande</td>
+        <td>X</td>
+        <td><img src="img/Bangu_escudo2.png" alt="Bangu" width="30"> Bangu</td>
+        <td>0 x 1</td>
+        <td><span style="color: #28a745; font-weight: bold;">Vitória</span></td>
+    </tr>
+    <tr>
+        <td>28/06/2025</td>
+        <td>Carioca Série A2</td>
+        <td><img src="img/Bangu_escudo2.png" alt="Bangu" width="30"> Bangu</td>
+        <td>X</td>
+        <td><img src="img/times/AA_Cabofriense_escudo.png" alt="Cabofriense" width="30"> Cabofriense</td>
+        <td>0 x 0</td>
+        <td><span style="color: #ffc107; font-weight: bold;">Empate</span></td>
+    </tr>
+    <tr>
+        <td>05/02/2025</td>
+        <td>Carioca</td>
+        <td><img src="img/Bangu_escudo2.png" alt="Bangu" width="30"> Bangu</td>
+        <td>X</td>
+        <td><img src="img/times/boavista-sport-club-saquaremarj-logo-png_seeklogo-20719.png" alt="Boavista" width="30"> Boavista</td>
+        <td>0 x 0</td>
+        <td><span style="color: #ffc107; font-weight: bold;">Empate</span></td>
+    </tr>
+    <tr>
+        <td>03/03/2024</td>
+        <td>Carioca</td>
+        <td><img src="img/times/boavista-sport-club-saquaremarj-logo-png_seeklogo-20719.png" alt="Boavista" width="30"> Boavista</td>
+        <td>X</td>
+        <td><img src="img/Bangu_escudo2.png" alt="Bangu" width="30"> Bangu</td>
+        <td>5 x 3</td>
+        <td><span style="color: #d62828; font-weight: bold;">Derrota</span></td>
+    </tr>
+    <tr>
+        <td>25/02/2024</td>
+        <td>Carioca</td>
+        <td><img src="img/Bangu_escudo2.png" alt="Bangu" width="30"> Bangu</td>
+        <td>X</td>
+        <td><img src="img/times/madureira.png" alt="Madureira" width="30"> Madureira</td>
+        <td>2 x 1</td>
+        <td><span style="color: #28a745; font-weight: bold;">Vitória</span></td>
+    </tr>
+    <tr>
+        <td>20/02/2024</td>
+        <td>Carioca</td>
+        <td><img src="img/times/Sampaio_Corrêa-RJ_logo.png" alt="Sampaio Corrêa" width="30"> Sampaio Corrêa</td>
+        <td>X</td>
+        <td><img src="img/Bangu_escudo2.png" alt="Bangu" width="30"> Bangu</td>
+        <td>2 x 0</td>
+        <td><span style="color: #d62828; font-weight: bold;">Derrota</span></td>
+    </tr>
+</tbody>
+    </table>
+</section>
+
+    <!-- Rodapé -->
+    <footer>
+        <p>&copy; 2024 Bangu Store. Todos os direitos reservados.</p>
+        <img src="img/logo-1701858752-1719005234-37cf381cc5c27eb83f33c1b2094320a91719005235-320-0.webp" alt="Bangu Atlético Clube" width="80" height="auto">
+    </footer>
+
+</body>
+</html>

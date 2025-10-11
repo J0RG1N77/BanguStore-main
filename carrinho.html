@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bangu Store - Carrinho</title>
+
+  <!-- Seus CSS -->
+  <link rel="stylesheet" href="Styles/produtos.css" />
+  <link rel="stylesheet" href="Styles/carinho.css" />
+  <link rel="stylesheet" href="Styles/carrossel.css">
+  <link rel="stylesheet" href="Styles/finalizarcompra.css">
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <!-- Account/menu styles (copiado de index.html para garantir consistência) -->
+  <style>
+    .hidden{display:none!important}
+    .account-container{position:relative}
+    /* Estilo do botão do menu de conta */
+    .account-button{
+      background:#fff;
+      border:1px solid #ddd;
+      padding:8px 12px;
+      border-radius:8px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      color:#111;
+      font-weight:600;
+      box-shadow:0 2px 6px rgba(0,0,0,0.06);
+      transition:background .12s, box-shadow .12s, transform .06s;
+    }
+    .account-button:hover{background:#f7f7f7}
+    .account-button:active{transform:translateY(1px)}
+    .account-button:focus{outline:2px solid rgba(0,123,255,0.12)}
+
+    .dropdown{position:absolute;right:0;top:calc(100% + 8px);min-width:180px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,0.08);z-index:40}
+    .dropdown ul{list-style:none;margin:0;padding:0}
+    .dropdown li{padding:10px 14px;cursor:pointer;color:#000;border-radius:6px}
+    .dropdown li a{color:inherit;text-decoration:none;display:block}
+    .dropdown li:hover{background:#f5f5f5}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:50}
+    .modal .modal-content{background:#fff;padding:18px;border-radius:8px;max-width:520px;width:90%;box-shadow:0 10px 30px rgba(0,0,0,0.2);position:relative}
+    .modal .modal-content label{display:block;margin-bottom:8px;font-size:14px}
+    .modal .modal-content input{width:100%;padding:8px;margin-top:4px;border:1px solid #ccc;border-radius:6px}
+    .modal .modal-content .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .modal .modal-close{position:absolute;right:8px;top:6px;border:none;background:transparent;font-size:20px;cursor:pointer}
+  </style>
+</head>
+<body>
+
+  <!-- =========================
+       Cabeçalho
+       ========================= -->
+  <header>
+    <div class="logo">
+      <img src="img/Bangu_escudo2.png" alt="Bangu Atlético Clube" />
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="produtos.html">Produtos</a></li>
+        <li><a href="sobre.html">Sobre</a></li>
+        <li><a href="resultados.html">Resultados</a></li>
+        <li>
+          <div class="cart-container">
+            <button id="cart-button">
+              <i class="fas fa-shopping-cart"></i>
+              <span id="cart-count">0</span>
+            </button>
+            <div id="cart-dropdown" class="cart-dropdown hidden">
+              <ul id="cart-items"></ul>
+              <p><strong>Total: R$ <span id="cart-total">0.00</span></strong></p>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </nav>
+    <div class="user-options">
+      <a href="pag-login.html"><i class="fas fa-user"></i></a>
+      <button id="theme-toggle">🌙</button>
+    </div>
+  </header>
+
+  <!-- =========================
+       Carrinho
+       ========================= -->
+  <main class="carrinho-container">
+    <div class="carrinho-header">
+      <h1 class="carrinho-title">Meu Carrinho</h1>        
+    </div>    
+
+    <!-- Etapas -->
+    <div class="steps">
+      <!-- Etapa Loja (ativa) -->
+      <div class="step active">
+        <div class="icon">🏬</div>
+        <span>Loja</span>
+      </div>
+
+      <div class="line"></div>
+
+      <!-- Etapa Casa -->
+      <div class="step">
+        <div class="icon">🏠</div>
+        <span>Sua Casa</span>
+      </div>
+    </div>
+
+    <!-- Conteúdo do carrinho -->
+    <div class="carrinho-content">
+      <div class="carrinho-items" id="carrinho-itens-js">
+        <!-- Itens reais do carrinho aparecerão aqui via JS -->
+      </div>      
+
+      <div class="carrinho-summary">
+        <h3 class="summary-title">Resumo do Pedido</h3>
+
+        <!-- Campos de cupom e CEP -->
+        <div style="display:flex;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
+          <div>
+            <label for="campo-cep" style="font-weight:bold;">Calcule o Frete:</label>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="campo-cep" placeholder="Digite seu CEP" style="width:120px;">
+              <button type="button" id="calcular-frete">Calcular</button>
+              <button type="button" id="limpar-frete">Limpar</button>
+            </div>
+            <span id="cep-msg" style="color:#009688;font-size:13px;display:block;margin-top:6px;"></span>
+          </div>
+        </div>
+
+        <div class="summary-row">
+          <span class="summary-label">Subtotal (<span id="qtd-itens">0</span> itens)</span>
+          <span class="summary-value" id="subtotal-carrinho">R$ 0,00</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Frete</span>
+          <span class="summary-value" id="frete-carrinho">R$ 0,00</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Descontos</span>
+          <span class="summary-value" id="desconto-carrinho">R$ 0,00</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span id="total-carrinho">R$ 0,00</span>
+        </div>
+
+        <button class="checkout-btn" id="finalizar-compra">Finalizar Compra</button>
+        <a href="produtos.html" class="continue-shopping">Continuar comprando</a>
+
+        <!-- Campo de cupom -->
+        <div class="campo-cupom">
+          <label for="campo-cupom" style="font-weight:bold;">Cupom:</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="campo-cupom" placeholder="Digite o cupom" style="width:120px;">
+            <button type="button" id="aplicar-cupom">Aplicar</button>
+            <span id="cupom-msg" style="color:#009688;font-size:13px;"></span>
+            <button type="button" id="remover-cupom" style="display:none;margin-left:8px;">Remover</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Checkout Modal (layout melhorado) -->
+  <div id="checkout-modal" class="modal" style="display:none; position:fixed; inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:9999;padding:20px;">
+    <div style="background:#fff;padding:20px;border-radius:12px;max-width:560px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.4);position:relative;font-family:Arial,Helvetica,sans-serif;">
+      <button id="checkout-close" aria-label="Fechar" style="position:absolute;right:14px;top:12px;background:transparent;border:none;font-size:22px;cursor:pointer;color:#666;">&times;</button>
+      <div style="display:flex;gap:16px;align-items:flex-start;">
+        <div style="flex:1;min-width:0;">
+          <h2 style="margin:0 0 8px 0;font-size:20px;color:#222;">Finalizar Compra</h2>
+          <p style="margin:0 0 12px 0;color:#555;font-size:14px;">Preencha os dados de pagamento e o e-mail para receber a nota fiscal (fictícia).</p>
+
+          <form id="checkout-form" method="POST" action="php/checkout.php" style="display:flex;flex-direction:column;gap:10px;">
+
+            <label style="font-weight:600;font-size:13px;color:#333;">E-mail</label>
+            <input type="email" name="email" id="checkout-email" required style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+
+            <div style="display:grid;grid-template-columns:1fr;gap:10px;">
+              <div>
+                <label style="font-weight:600;font-size:13px;color:#333;">Nome no cartão</label>
+                <input type="text" name="card_name" id="checkout-card-name" required style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+              </div>
+
+              <div>
+                <label style="font-weight:600;font-size:13px;color:#333;">Número do cartão</label>
+                <input type="text" name="card_number" id="checkout-card-number" inputmode="numeric" required placeholder="0000 0000 0000 0000" style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+              </div>
+
+              <div style="display:flex;gap:8px;">
+                <div style="flex:1;">
+                  <label style="font-weight:600;font-size:13px;color:#333;">Validade (MM/AA)</label>
+                  <input type="text" name="expiry" id="checkout-expiry" required placeholder="MM/AA" style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+                </div>
+                <div style="width:120px;">
+                  <label style="font-weight:600;font-size:13px;color:#333;">CVV</label>
+                  <input type="text" name="cvv" id="checkout-cvv" inputmode="numeric" required placeholder="123" style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+                </div>
+              </div>
+
+            </div>
+
+            <input type="hidden" name="cart_data" id="checkout-cart-data" value="[]">
+
+            <div style="display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:8px;">
+              <button type="button" id="checkout-cancel" style="padding:10px 14px;background:#f3f3f3;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;color:#333;">Cancelar</button>
+              <button type="submit" id="checkout-submit" style="padding:10px 16px;background:#b52a37;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Pagar e Finalizar</button>
+            </div>
+          </form>
+        </div>
+
+        <aside style="width:220px;background:#fafafa;border-left:1px solid #f0f0f0;padding-left:16px;border-radius:8px;">
+          <h3 style="margin-top:0;font-size:14px;color:#222;">Resumo</h3>
+          <div id="checkout-summary" style="font-size:13px;color:#444;line-height:1.4;">Carregando resumo...</div>
+        </aside>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================
+       Footer
+       ========================= -->
+  <footer>
+    <p>&copy; 2024 Bangu Store. Todos os direitos reservados.</p>
+    <img src="img/logo-1701858752-1719005234-37cf381cc5c27eb83f33c1b2094320a91719005235-320-0.webp" alt="Bangu Atlético Clube" width="80" height="auto" />
+    <div class="contato">
+      <p>Estamos à disposição para atender você!</p>
+      <p><a href="https://wa.me/+5521989496516?text=MENSAGEM" target="_blank">21989496516</a></p>
+      <p><a href="mailto:bangustore7@gmail.com">bangustore7@gmail.com</a></p>
+    </div>
+  </footer>
+
+  <!-- =========================
+       Scripts
+       ========================= -->
+  <!-- =========================
+       Scripts
+       ========================= -->
+  
+  <script src="JavaScript/"></script>
+  <script src="JavaScript/script.js"></script>
+  <script src="JavaScript/finalizarcompra.js"></script>
+
+  <script>
+    (function(){
+      const openBtn = document.getElementById('finalizar-compra');
+      const modal = document.getElementById('checkout-modal');
+      const cancelBtn = document.getElementById('checkout-cancel');
+      const closeBtn = document.getElementById('checkout-close');
+      const cartInput = document.getElementById('checkout-cart-data');
+      const form = document.getElementById('checkout-form');
+      const summaryEl = document.getElementById('checkout-summary');
+
+      const cepInput = document.getElementById('campo-cep');
+      const calcBtn = document.getElementById('calcular-frete');
+      const clearBtn = document.getElementById('limpar-frete');
+      const cepMsg = document.getElementById('cep-msg');
+      const freteEl = document.getElementById('frete-carrinho');
+      const subtotalEl = document.getElementById('subtotal-carrinho');
+      const descontoEl = document.getElementById('desconto-carrinho');
+      const totalEl = document.getElementById('total-carrinho');
+      const qtdItensEl = document.getElementById('qtd-itens');
+
+      function getCartData() {
+        // Tenta ler do localStorage (chave comum 'cart' ou 'carrinho')
+        let cart = [];
+        try {
+          cart = JSON.parse(localStorage.getItem('cart') || localStorage.getItem('carrinho') || '[]');
+        } catch (e) { cart = []; }
+
+        // Se estiver vazio, tenta extrair do DOM (itens renderizados)
+        if (!Array.isArray(cart) || cart.length === 0) {
+          const items = [];
+          document.querySelectorAll('#carrinho-itens-js .carrinho-item').forEach(el => {
+            const name = el.querySelector('.item-nome')?.textContent?.trim() || el.dataset.name || 'Produto';
+            const priceText = el.querySelector('.item-preco')?.textContent?.replace(/[^0-9,\.]/g,'') || '0';
+            const price = parseFloat(priceText.replace(',','.')) || 0;
+            const qty = parseInt(el.querySelector('.item-quantidade')?.value || el.dataset.qty || '1', 10) || 1;
+            items.push({ name, qty, price });
+          });
+          cart = items;
+        }
+        return cart;
+      }
+
+      function renderSummary(cart) {
+        if (!Array.isArray(cart) || cart.length === 0) {
+          summaryEl.textContent = 'Carrinho vazio';
+          subtotalEl.textContent = formatCurrencyBR(0);
+          qtdItensEl.textContent = '0';
+          recalcTotal();
+          return;
+        }
+        let html = '';
+        let total = 0;
+        let totalQty = 0;
+        cart.forEach(it => {
+          const qty = (it.qty || 1);
+          const lineTotal = qty * (it.price || 0);
+          totalQty += qty;
+          total += lineTotal;
+          html += `<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>${escapeHtml(it.name)}</span><strong>R$ ${lineTotal.toFixed(2).replace('.',',')}</strong></div>`;
+        });
+        html += `<hr style="border:none;border-top:1px solid #eee;margin:8px 0;">`;
+        html += `<div style="display:flex;justify-content:space-between;font-weight:600;"><span>Total</span><span>R$ ${total.toFixed(2).replace('.',',')}</span></div>`;
+        summaryEl.innerHTML = html;
+
+        subtotalEl.textContent = formatCurrencyBR(total);
+        qtdItensEl.textContent = String(totalQty);
+        recalcTotal();
+      }
+
+      function escapeHtml(unsafe) {
+        return unsafe?.replace(/[&<>\\"']/g, function(m) { return {'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;',"'":'&#39;'}[m]; });
+      }
+
+      function parseCurrencyBR(text) {
+        if (!text) return 0;
+        text = String(text).trim();
+        text = text.replace(/^R\$\s?/, '');
+        // remover pontos de milhares e trocar vírgula por ponto
+        text = text.replace(/\./g, '');
+        text = text.replace(/,/g, '.');
+        const n = parseFloat(text);
+        return isNaN(n) ? 0 : n;
+      }
+
+      function formatCurrencyBR(num) {
+        return 'R$ ' + num.toFixed(2).replace('.', ',');
+      }
+
+      function recalcTotal() {
+        const subtotal = parseCurrencyBR(subtotalEl.textContent);
+        const frete = parseCurrencyBR(freteEl.textContent);
+        const desconto = parseCurrencyBR(descontoEl.textContent);
+        const tot = Math.max(0, subtotal + frete - desconto);
+        totalEl.textContent = formatCurrencyBR(tot);
+      }
+
+      // máscara simples de CEP: 00000-000
+      cepInput && cepInput.addEventListener('input', function(){
+        let v = this.value.replace(/\D/g,'').slice(0,8);
+        if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5);
+        this.value = v;
+      });
+
+      // calcular frete (valor fixo R$25,00)
+      calcBtn && calcBtn.addEventListener('click', function(){
+        const cep = (cepInput?.value || '').replace(/\D/g,'')
+        if (!cep || cep.length !== 8) {
+          cepMsg.textContent = 'CEP inválido. Digite 8 dígitos.';
+          return;
+        }
+        freteEl.textContent = formatCurrencyBR(25.00);
+        cepMsg.textContent = 'Frete calculado para CEP ' + cep.slice(0,5) + '-' + cep.slice(5);
+        recalcTotal();
+      });
+
+      // limpar frete
+      clearBtn && clearBtn.addEventListener('click', function(){
+        if (cepInput) cepInput.value = '';
+        freteEl.textContent = formatCurrencyBR(0);
+        cepMsg.textContent = '';
+        recalcTotal();
+      });
+
+      // abrir modal e renderizar resumo
+      openBtn && openBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        const cart = getCartData();
+        cartInput.value = JSON.stringify(cart);
+        renderSummary(cart);
+        modal.style.display = 'flex';
+        setTimeout(()=>document.getElementById('checkout-email').focus(), 100);
+      });
+
+      cancelBtn && cancelBtn.addEventListener('click', function(){
+        modal.style.display = 'none';
+      });
+
+      closeBtn && closeBtn.addEventListener('click', function(){
+        modal.style.display = 'none';
+      });
+
+      // fechar clicando fora
+      modal && modal.addEventListener('click', function(e){
+        if (e.target === modal) modal.style.display = 'none';
+      });
+
+      // mascaramento número do cartão
+      const cardNumber = document.getElementById('checkout-card-number');
+      cardNumber && cardNumber.addEventListener('input', function(){
+        let v = this.value.replace(/\D/g,'').slice(0,16);
+        v = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+        this.value = v;
+      });
+
+      // validação simples antes de enviar
+      form && form.addEventListener('submit', function(e){
+        const email = document.getElementById('checkout-email').value.trim();
+        if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+          e.preventDefault();
+          alert('Informe um e-mail válido.');
+          return false;
+        }
+        // deixa o envio prosseguir; o checkout.php lida com o restante
+      });
+
+      // recalcular inicialmente
+      freteEl.textContent = freteEl.textContent || formatCurrencyBR(0);
+      recalcTotal();
+
+      // reagir a mudanças no carrinho via storage
+      window.addEventListener('storage', function(e){
+        if (e.key === 'cart' || e.key === 'carrinho') {
+          const cart = getCartData();
+          renderSummary(cart);
+        }
+      });
+
+    })();
+  </script>
+
+  <!-- Sincronizar estado de sessão do servidor para o cabeçalho do carrinho -->
+  <script>
+document.addEventListener('DOMContentLoaded', function(){
+  fetch('php/current_user.php', { credentials: 'same-origin' })
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.logged && data.user) {
+        const u = { nomeCompleto: data.user.nome_completo || '', login: data.user.login || '', cpf: data.user.cpf || '' };
+        localStorage.setItem('usuario', JSON.stringify(u));
+        const loggedKey = data.user.login || (data.user.nome_completo && data.user.nome_completo.split(' ')[0]) || '';
+        if (loggedKey) localStorage.setItem('loggedUser', loggedKey);
+
+        // inserir markup consistente com as outras páginas
+        const userOptions = document.querySelector('.user-options');
+        if (userOptions) {
+          const displayName = (u.nomeCompleto || u.login || 'Usuário').split(' ')[0];
+          userOptions.innerHTML = `
+            <div class="account-container">
+              <button id="account-button" class="account-button" aria-haspopup="true" aria-expanded="false">${displayName}</button>
+              <div id="account-dropdown" class="dropdown hidden" role="menu">
+                <ul>
+                  <li id="manage-account" role="menuitem">Gerenciar Conta</li>
+                  <li id="logout" role="menuitem">Sair</li>
+                  <li id="login-link" role="menuitem" class="hidden"><a href="pag-login.html">Entrar / Cadastrar</a></li>
+                </ul>
+              </div>
+            </div>
+            <button id="theme-toggle">🌙</button>
+          `;
+
+          const accountButton = document.getElementById('account-button');
+          const accountDropdown = document.getElementById('account-dropdown');
+          const logoutItem = document.getElementById('logout');
+          const manageAccount = document.getElementById('manage-account');
+
+          // toggle dropdown
+          if (accountButton && accountDropdown) {
+            accountButton.addEventListener('click', function(e){
+              e.stopPropagation();
+              accountDropdown.classList.toggle('hidden');
+              accountButton.setAttribute('aria-expanded', String(!accountDropdown.classList.contains('hidden')));
+            });
+          }
+
+          // fechar ao clicar fora
+          document.addEventListener('click', function(e){
+            if (!e.target.closest('.account-container') && accountDropdown && !accountDropdown.classList.contains('hidden')) {
+              accountDropdown.classList.add('hidden');
+            }
+          });
+
+          // gerenciar conta (redireciona para página de login/gestão)
+          if (manageAccount) {
+            manageAccount.addEventListener('click', function(){
+              window.location.href = 'pag-login.html';
+            });
+          }
+
+          // logout: chamar endpoint e limpar localStorage
+          if (logoutItem) {
+            logoutItem.addEventListener('click', function(){
+              fetch('php/logout.php', { method: 'GET', credentials: 'same-origin' })
+                .finally(function(){
+                  localStorage.removeItem('loggedUser');
+                  localStorage.removeItem('usuario');
+                  window.location.reload();
+                });
+            });
+          }
+        }
+      } else {
+        localStorage.removeItem('loggedUser');
+      }
+    })
+    .catch(err => {
+      console.warn('current_user fetch failed', err);
+      localStorage.removeItem('loggedUser');
+    });
+});
+  </script>
+
+  <!-- Inserir modal de Gerenciar Conta (mesmo markup do index.html) -->
+<div id="account-modal" class="modal hidden" role="dialog" aria-hidden="true">
+  <div class="modal-content">
+    <button id="close-account-modal" class="modal-close" aria-label="Fechar">&times;</button>
+    <h2>Gerenciar Conta</h2>
+    <form id="account-form">
+      <label>Nome completo
+        <input id="modal-nome" name="nome" type="text" />
+      </label>
+      <label>CPF
+        <input id="modal-cpf" name="cpf" type="text" />
+      </label>
+      <label>Celular
+        <input id="modal-celular" name="celular" type="text" />
+      </label>
+      <label>Login
+        <input id="modal-login" name="login" type="text" />
+      </label>
+      <label>Senha
+        <input id="modal-senha" name="senha" type="password" />
+      </label>
+      <div class="modal-actions">
+        <button type="button" id="cancel-account">Cancelar</button>
+        <button type="submit" id="save-account">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Wire up modal behavior to the injected manage-account / logout elements
+document.addEventListener('DOMContentLoaded', function(){
+  const manageAccount = document.getElementById('manage-account');
+  const accountModal = document.getElementById('account-modal');
+  const closeModal = document.getElementById('close-account-modal');
+  const cancelAccount = document.getElementById('cancel-account');
+  const accountForm = document.getElementById('account-form');
+  const accountDropdown = document.getElementById('account-dropdown');
+  const accountButton = document.getElementById('account-button');
+
+  function getStoredUser(){
+    try{ return JSON.parse(localStorage.getItem('usuario')) || null; }catch(e){ return null }
+  }
+
+  if (manageAccount) {
+    // Support async resolution: if localStorage doesn't have the user yet (fetch may be pending),
+    // attempt to fetch current_user.php before redirecting to login. This prevents redirect when
+    // the page is still syncing session state from the server.
+    manageAccount.addEventListener('click', async function(e){
+      e.preventDefault();
+
+      function getStoredUserLocal(){
+        try{ return JSON.parse(localStorage.getItem('usuario')) || null; }catch(e){ return null }
+      }
+
+      let user = getStoredUserLocal();
+      if (!user) {
+        // try to sync from server synchronously
+        try {
+          const resp = await fetch('php/current_user.php', { credentials: 'same-origin' });
+          if (resp && resp.ok) {
+            const data = await resp.json();
+            if (data && data.logged && data.user) {
+              const u = { nomeCompleto: data.user.nome_completo || '', login: data.user.login || '', cpf: data.user.cpf || '' };
+              localStorage.setItem('usuario', JSON.stringify(u));
+              const loggedKey = u.login || (u.nomeCompleto && u.nomeCompleto.split(' ')[0]) || '';
+              if (loggedKey) localStorage.setItem('loggedUser', loggedKey);
+              user = u;
+            }
+          }
+        } catch (err) {
+          console.warn('sync current_user failed', err);
+        }
+      }
+
+      if (!user) {
+        // still no user -> go to login
+        window.location.href = 'pag-login.html';
+        return;
+      }
+
+      // fill modal fields exactly like index.html
+      const modalNome = document.getElementById('modal-nome');
+      const modalCpf = document.getElementById('modal-cpf');
+      const modalCel = document.getElementById('modal-celular');
+      const modalLogin = document.getElementById('modal-login');
+      const modalSenha = document.getElementById('modal-senha');
+
+      if (modalNome) modalNome.value = user.nomeCompleto || '';
+      if (modalCpf) modalCpf.value = user.cpf || '';
+      if (modalCel) modalCel.value = user.telefoneCelular || '';
+      if (modalLogin) modalLogin.value = user.login || '';
+      if (modalSenha) modalSenha.value = user.senha || '';
+
+      const accountModalEl = document.getElementById('account-modal');
+      const accountDropdownEl = document.getElementById('account-dropdown');
+      if (accountModalEl) accountModalEl.classList.remove('hidden');
+      if (accountDropdownEl) accountDropdownEl.classList.add('hidden');
+    });
+  }
+
+  if (closeModal) closeModal.addEventListener('click', function(){ if (accountModal) accountModal.classList.add('hidden'); });
+  if (cancelAccount) cancelAccount.addEventListener('click', function(){ if (accountModal) accountModal.classList.add('hidden'); });
+
+  if (accountForm) {
+    accountForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      const updated = {
+        nomeCompleto: (document.getElementById('modal-nome')||{}).value?.trim() || '',
+        cpf: (document.getElementById('modal-cpf')||{}).value?.trim() || '',
+        telefoneCelular: (document.getElementById('modal-celular')||{}).value?.trim() || '',
+        login: (document.getElementById('modal-login')||{}).value?.trim() || '',
+        senha: (document.getElementById('modal-senha')||{}).value?.trim() || ''
+      };
+      localStorage.setItem('usuario', JSON.stringify(updated));
+      // ensure loggedUser matches updated login or first name
+      const loggedKey = updated.login || (updated.nomeCompleto && updated.nomeCompleto.split(' ')[0]) || '';
+      if (loggedKey) localStorage.setItem('loggedUser', loggedKey);
+      else localStorage.removeItem('loggedUser');
+
+      if (accountButton) accountButton.textContent = updated.nomeCompleto ? updated.nomeCompleto.split(' ')[0] : updated.login || 'Usuário';
+
+      if (accountModal) accountModal.classList.add('hidden');
+      alert('Dados atualizados com sucesso.');
+    });
+  }
+
+  // ensure logout also clears session on server and localStorage
+  const logoutItem = document.getElementById('logout');
+  if (logoutItem) {
+    logoutItem.addEventListener('click', function(){
+      fetch('php/logout.php', { method: 'GET', credentials: 'same-origin' })
+        .finally(function(){
+          localStorage.removeItem('loggedUser');
+          localStorage.removeItem('usuario');
+          window.location.reload();
+        });
+    });
+  }
+});
+</script>
+
+</body>
+</html>

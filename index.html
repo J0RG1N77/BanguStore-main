@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bangu Store - Produtos</title>
+  <link rel="stylesheet" href="Styles/home.css">
+  <script src="JavaScript/script.js"></script>
+  
+</head><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<body>
+  
+  <header>
+    <div class="navbar">
+      <img src="img/Bangu_escudo2.png" alt="Bangu Atlético Clube" width="80" height="auto">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li> <!-- Link para a página inicial -->
+        <li><a href="produtos.html">Produtos</a></li> <!-- Link para a página de produtos -->
+        <li><a href="sobre.html">Sobre</a></li> <!-- Link para a página sobre -->
+        <li><a href="resultados.html">Resultados</a></li>
+      </ul>
+    </nav>
+    <div class="user-options">
+      <div class="account-container">
+        <button id="account-button" class="account-button" aria-haspopup="true" aria-expanded="false">Entrar</button>
+        <div id="account-dropdown" class="dropdown hidden" role="menu">
+          <ul>
+            <li id="manage-account" role="menuitem">Gerenciar Conta</li>
+            <li id="logout" role="menuitem" class="hidden">Sair</li>
+            <li id="login-link" role="menuitem"><a href="pag-login.html">Entrar / Cadastrar</a></li>
+          </ul>
+        </div>
+      </div>
+      <button id="theme-toggle">🌙</button>
+    </div>
+  </header>
+  
+  <!-- Account modal and minimal styles -->
+  <style>
+    .hidden{display:none!important}
+    .account-container{position:relative}
+    /* Estilo do botão do menu de conta */
+    .account-button{
+      background:#fff;
+      border:1px solid #ddd;
+      padding:8px 12px;
+      border-radius:8px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      color:#111;
+      font-weight:600;
+      box-shadow:0 2px 6px rgba(0,0,0,0.06);
+      transition:background .12s, box-shadow .12s, transform .06s;
+    }
+    .account-button:hover{background:#f7f7f7}
+    .account-button:active{transform:translateY(1px)}
+    .account-button:focus{outline:2px solid rgba(0,123,255,0.12)}
+    .account-button .caret{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #333}
+
+    .dropdown{position:absolute;right:0;top:calc(100% + 8px);min-width:180px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,0.08);z-index:40}
+    .dropdown ul{list-style:none;margin:0;padding:0}
+    .dropdown li{padding:10px 14px;cursor:pointer;color:#000;border-radius:6px}
+    .dropdown li a{color:inherit;text-decoration:none;display:block}
+    .dropdown li:hover{background:#f5f5f5}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:50}
+    .modal .modal-content{background:#fff;padding:18px;border-radius:8px;max-width:520px;width:90%;box-shadow:0 10px 30px rgba(0,0,0,0.2);position:relative}
+    .modal .modal-content label{display:block;margin-bottom:8px;font-size:14px}
+    .modal .modal-content input{width:100%;padding:8px;margin-top:4px;border:1px solid #ccc;border-radius:6px}
+    .modal .modal-content .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .modal .modal-close{position:absolute;right:8px;top:6px;border:none;background:transparent;font-size:20px;cursor:pointer}
+  </style>
+
+  <div id="account-modal" class="modal hidden" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <button id="close-account-modal" class="modal-close" aria-label="Fechar">&times;</button>
+      <h2>Gerenciar Conta</h2>
+      <form id="account-form">
+        <label>Nome completo
+          <input id="modal-nome" name="nome" type="text" />
+        </label>
+        <label>LOGIN
+          <input id="modal-login" name="login" type="text" />
+        </label>
+        <label>Celular
+          <input id="modal-celular" name="celular" type="text" />
+        </label>
+        <label>Email
+          <input id="modal-email" name="email" type="email" />
+        </label>
+        <div class="modal-actions">
+          <button type="button" id="cancel-account">Cancelar</button>
+          <button type="submit" id="save-account">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <section class="hero">
+    <div class="text-section">
+      <h2>Dê um novo refresh no seu estilo!</h2>
+      <p>Conforto e Estilo com as Cores do Bangu Atlético!
+        Experimente a combinação perfeita de conforto e estilo com a nova linha de roupas do Bangu Atlético. Ideal para treinos intensos, atividades físicas ou mesmo para um look casual no dia a dia, esta peça é confeccionada com tecido leve e respirável, garantindo que você se sinta à vontade em qualquer situação.</p>
+      <a href="produtos.html" class="btn">Ver Agora →</a>
+    </div>
+    <div class="image-section">
+      <img src="img/croppedkombatBangu.webp" alt="imagemdaHOME">
+    </div>
+      <!-- Adicione mais produtos -->
+  </section>
+
+     
+
+  <!-- Rodapé -->
+  <footer>
+    <p>&copy; 2024 Bangu Store. Todos os direitos reservados.</p>
+    <div class="navbar">
+      <img src="img/logo-1701858752-1719005234-37cf381cc5c27eb83f33c1b2094320a91719005235-320-0.webp" alt="Bangu Atlético Clube" width="80" height="auto">
+    </div>
+  </footer>
+
+  <!-- Script to manage account dropdown, modal and user data -->
+  <script>
+    (function(){
+      const accountButton = document.getElementById('account-button');
+      const accountDropdown = document.getElementById('account-dropdown');
+      const manageAccount = document.getElementById('manage-account');
+      const logoutItem = document.getElementById('logout');
+      const loginLink = document.getElementById('login-link');
+      const accountModal = document.getElementById('account-modal');
+      const closeModal = document.getElementById('close-account-modal');
+      const cancelAccount = document.getElementById('cancel-account');
+      const accountForm = document.getElementById('account-form');
+
+      // Synchronize client-side state with server session
+      (function syncCurrentUser(){
+        try{
+          fetch('php/current_user.php', { credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(data => {
+              if (data && data.logged && data.user) {
+                const u = {
+                  nomeCompleto: data.user.nome_completo || '',
+                  email: data.user.email || '',
+                  login: data.user.login || '',
+                  celular: data.user.celular || ''
+                };
+                localStorage.setItem('usuario', JSON.stringify(u));
+                // loggedUser used by UI to indicate session
+                const loggedKey = (data.user.nome_completo && data.user.nome_completo.split(' ')[0]) || data.user.email || data.user.login || '';
+                if (loggedKey) localStorage.setItem('loggedUser', loggedKey);
+                else localStorage.removeItem('loggedUser');
+              } else {
+                localStorage.removeItem('loggedUser');
+              }
+              updateUIForUser();
+            })
+            .catch(err => {
+              console.warn('current_user fetch failed', err);
+              updateUIForUser();
+            });
+        }catch(e){
+          updateUIForUser();
+        }
+      })();
+
+      function getStoredUser(){
+        try{
+          const user = JSON.parse(localStorage.getItem('usuario')) || null;
+          const logged = localStorage.getItem('loggedUser');
+          if(!user) return null;
+          if(logged && (logged === user.email || logged === (user.nomeCompleto && user.nomeCompleto.split(' ')[0]) || logged === user.nomeCompleto)){
+            return user;
+          }
+          return null;
+        }catch(e){return null}
+      }
+
+      function setStoredUser(u){ localStorage.setItem('usuario', JSON.stringify(u)); }
+
+      function updateUIForUser(){
+        const user = getStoredUser();
+        if(user){
+          accountButton.textContent = user.nomeCompleto ? user.nomeCompleto.split(' ')[0] : user.email || 'Usuário';
+          logoutItem.classList.remove('hidden');
+          loginLink.classList.add('hidden');
+        } else {
+          accountButton.textContent = 'Entrar';
+          logoutItem.classList.add('hidden');
+          loginLink.classList.remove('hidden');
+        }
+      }
+
+      accountButton.addEventListener('click', (e)=>{
+        accountDropdown.classList.toggle('hidden');
+        accountButton.setAttribute('aria-expanded', String(!accountDropdown.classList.contains('hidden')));
+      });
+
+      document.addEventListener('click',(e)=>{
+        if(!e.target.closest('.account-container') && !e.target.closest('#account-dropdown')){
+          if(!accountDropdown.classList.contains('hidden')) accountDropdown.classList.add('hidden');
+        }
+      });
+
+      manageAccount.addEventListener('click', ()=>{
+        const user = getStoredUser();
+        if(!user){
+          // if no user registered, redirect to login
+          window.location.href = 'pag-login.html';
+          return;
+        }
+        // fill modal fields (removido modal-fixo)
+        console.log('Tentando preencher modal-nome:', document.getElementById('modal-nome'));
+        document.getElementById('modal-nome').value = user.nomeCompleto || '';
+        console.log('Tentando preencher modal-login:', document.getElementById('modal-login'));
+        document.getElementById('modal-login').value = user.login || '';
+        console.log('Tentando preencher modal-celular:', document.getElementById('modal-celular'));
+        console.log('Valor de user.celular:', user.celular);
+        document.getElementById('modal-celular').value = user.celular || '';
+        console.log('Tentando preencher modal-email:', document.getElementById('modal-email'));
+        document.getElementById('modal-email').value = user.email || '';
+
+        accountModal.classList.remove('hidden');
+        accountDropdown.classList.add('hidden');
+      });
+
+      closeModal.addEventListener('click', ()=> accountModal.classList.add('hidden'));
+      cancelAccount.addEventListener('click', ()=> accountModal.classList.add('hidden'));
+
+      accountForm.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const updated = {
+          nomeCompleto: document.getElementById('modal-nome').value.trim(),
+          login: document.getElementById('modal-login').value.trim(),
+          celular: document.getElementById('modal-celular').value.trim(),
+          email: document.getElementById('modal-email').value.trim()
+        };
+
+        fetch('php/update_user.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updated),
+          credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            setStoredUser(updated);
+            updateUIForUser();
+            accountModal.classList.add('hidden');
+            alert('Dados atualizados com sucesso.');
+          } else {
+            alert('Erro ao atualizar dados: ' + (data.message || 'Erro desconhecido.'));
+          }
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          alert('Erro ao conectar com o servidor.');
+        });
+      });
+
+      logoutItem.addEventListener('click', ()=>{
+        // chamar logout no servidor, limpar localStorage e sinalizar logout para outras abas
+        fetch('php/logout.php', { method: 'GET', credentials: 'same-origin' })
+          .finally(() => {
+            localStorage.removeItem('loggedUser');
+            localStorage.removeItem('usuario');
+            // sinaliza para outras abas
+            try { localStorage.setItem('loggedOut', String(Date.now())); } catch(e){}
+            updateUIForUser();
+            accountDropdown.classList.add('hidden');
+            alert('Você saiu da conta.');
+          });
+      });
+
+      // sincronizar logout entre abas
+      window.addEventListener('storage', function(e){
+        if (!e) return;
+        if (e.key === 'loggedOut' || e.key === 'loggedUser' || e.key === 'usuario') {
+          // atualizar UI automaticamente quando outra aba fez logout/login
+          updateUIForUser();
+        }
+      });
+
+      // initial UI setup
+      updateUIForUser();
+    })();
+  </script>
+</body>
+</html>
