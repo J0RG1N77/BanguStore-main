@@ -80,7 +80,36 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------ Adicionar produtos ------------------
   const buttons = document.querySelectorAll('.add-to-cart');
   buttons.forEach(button => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async (event) => {
+      event.preventDefault(); // Previne o comportamento padrão do botão
+
+      // Verifica o status de login
+      const response = await fetch('php/check_login_status.php');
+      const data = await response.json();
+
+      if (!data.isLoggedIn) {
+        // Exibe o modal de login se o usuário não estiver logado
+        const loginModal = document.getElementById('login-modal');
+        loginModal.style.display = 'block';
+
+        // Adiciona evento para fechar o modal
+        loginModal.querySelector('.close-button').onclick = () => {
+          loginModal.style.display = 'none';
+        };
+        window.onclick = (event) => {
+          if (event.target == loginModal) {
+            loginModal.style.display = 'none';
+          }
+        };
+
+        // Redireciona para a página de login ao clicar no botão "Fazer Login"
+        document.getElementById('login-modal-button').onclick = () => {
+          window.location.href = 'pag-login.html'; // Ajuste o caminho para sua página de login
+        };
+
+        return; // Impede a adição ao carrinho
+      }
+
       const card = button.closest('.produto');
       const nome = button.dataset.name || card.querySelector('h3')?.textContent || 'Produto';
       const preco = parseFloat(button.dataset.price || card.querySelector('p')?.textContent.replace('R$', '').replace(',', '.') || 0);

@@ -15,6 +15,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
 <body>
+<?php
+require_once __DIR__ . '/php/db.php';
+$pdo = getPDO();
+?>
 
   <header>
     <div class="logo">
@@ -23,7 +27,7 @@
     <nav>
       <ul>
         <li><a href="index.html">Home</a></li>
-        <li><a href="produtos.html">Produtos</a></li>
+        <li><a href="produtos.php">Produtos</a></li>
         <li><a href="sobre.html">Sobre</a></li>
         <li><a href="resultados.html">Resultados</a></li>
         <li>
@@ -36,7 +40,7 @@
   <div id="cart-dropdown" class="cart-dropdown hidden">
     <ul id="cart-items"></ul>
     <p><strong>Total: R$ <span id="cart-total">0,00</span></strong></p>
-   <a href="carrinho.html"><button id="finalizar-compra">Finalizar Compra</button></a>
+   <a href="carrinho.php"><button id="finalizar-compra">Finalizar Compra</button></a>
   
   </div>
 </div>
@@ -74,44 +78,46 @@
             <img src="img/Banner promoção frete grátis moderno em pink e branco.png" alt="Promo 2" />
             <div class="promo-caption">Promoção 2 - Frete grátis</div>
           </div>
-          <div class="promo-slide">
-            <img src="https://picsum.photos/900/300?random=3" alt="Promo 3" />
-            <div class="promo-caption">Promoção 3 - Leve 3 Pague 2</div>
-          </div>
         </div>
         <div class="promo-dots"></div>
       </div>
 
       <h2>Nossos Produtos</h2>
       <div class="grid-produtos">
-  <div class="produto" data-id="1">
-    <img src="img/ImagensSemFundo/camisa kombat masculina.png" alt="Camisa Oficial 1" class="produto-img" id="open-modal-1" style="cursor:pointer;" />
-    <h3>CAMISA OFICIAL BANGU 24 KOMBAT MASCULINA</h3>
-    <p>R$ 249,99</p>
+  <?php
+  $stmt = $pdo->query("SELECT * FROM produtos");
+  $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($produtos as $produto):
+    // Formata preço para moeda brasileira
+    $precoFormatado = number_format($produto['preco'], 2, ',', '.');
+  ?>
+  <div class="produto" data-id="<?= $produto['id_produto'] ?>">
+    <img src="<?= $produto['imagemURL'] ?>" alt="<?= htmlspecialchars($produto['nome']) ?>" class="produto-img" id="open-modal-<?= $produto['id_produto'] ?>" style="cursor:pointer;" />
+    <h3><?= htmlspecialchars($produto['nome']) ?></h3>
+    <p>R$ <?= $precoFormatado ?></p>
+    <p>Estoque: <?= $produto['estoque'] ?></p>
     <button 
       class="add-to-cart"
-      data-id="1"
-      data-name="Camisa Oficial Bangu 24 Kombat Masculina"
-      data-price="249.99">
+      data-id="<?= $produto['id_produto'] ?>">
       Adicionar ao Carrinho
     </button>
   </div>
 
-  <!-- Modal CAMISA OFICIAL BANGU 24 KOMBAT MASCULINA -->
-  <div id="modal-1" class="modal-produto" style="display:none;">
+  <!-- Modal para <?= htmlspecialchars($produto['nome']) ?> -->
+  <div id="modal-<?= $produto['id_produto'] ?>" class="modal-produto" style="display:none;">
     <div class="modal-content modal-flex">
-      <span class="close-modal" id="close-modal-1">&times;</span>
+      <span class="close-modal" id="close-modal-<?= $produto['id_produto'] ?>">&times;</span>
       <div class="modal-left">
-        <img src="img/ImagensSemFundo/camisa kombat masculina.png" alt="Camisa Kombat Masculina 1" class="modal-main-img" />
+        <img src="<?= $produto['imagemURL'] ?>" alt="<?= htmlspecialchars($produto['nome']) ?>" class="modal-main-img" />
         <div class="modal-thumbs">
-          <img src="img/ImagensSemFundo/camisa kombat masculina.png" alt="Camisa Kombat Masculina 1" />
-          <img src="img/BanguCamisa2.png" alt="Camisa Kombat Masculina 2" />
+          <img src="<?= $produto['imagemURL'] ?>" alt="<?= htmlspecialchars($produto['nome']) ?>" />
+          <!-- Adicione mais imagens se houver variações -->
         </div>
       </div>
       <div class="modal-right">
-        <h2 style="font-size:2em; margin-bottom:10px; color:#d32f2f;">Camisa Oficial Bangu 24 Kombat Masculina</h2>
-        <p style="color:#d32f2f; font-size:1.5em; font-weight:bold; margin:0;">R$249,99 no pix</p>
-        <p style="color:#aaa; margin:0 0 15px 0;">ou 2x de R$ 125,00 no cartão</p>
+        <h2 style="font-size:2em; margin-bottom:10px; color:#d32f2f;"><?= htmlspecialchars($produto['nome']) ?></h2>
+        <p style="color:#d32f2f; font-size:1.5em; font-weight:bold; margin:0;">R$ <?= $precoFormatado ?> no pix</p>
+        <p style="color:#aaa; margin:0 0 15px 0;">ou 2x de R$ <?= number_format($produto['preco']/2, 2, ',', '.') ?> no cartão</p>
         <div style="margin-bottom:15px;">
           <span style="font-weight:bold;">Medida do produto:</span><br>
           <div class="modal-tamanhos">
@@ -122,11 +128,11 @@
             <button class="tamanho-btn">GG</button>
           </div>
         </div>
+        <p><strong>Descrição:</strong> <?= htmlspecialchars($produto['descricao'] ?? 'Sem descrição') ?></p>
+        <p><strong>Estoque:</strong> <?= $produto['estoque'] ?></p>
         <button 
           class="add-to-cart modal-add-cart"
-          data-id="1"
-          data-name="Camisa Oficial Bangu 24 Kombat Masculina"
-          data-price="249.99">
+          data-id="<?= $produto['id_produto'] ?>">
           Adicionar ao Carrinho
         </button>
         <ul class="modal-beneficios">
@@ -138,281 +144,11 @@
     </div>
     <div class="modal-backdrop"></div>
   </div>
-
-  <div class="produto" data-id="2">
-    <img src="img/ImagensSemFundo/CamisaGoleiro-Photoroom.png" alt="Camisa Oficial 2" class="produto-img" id="open-modal-2" style="cursor:pointer;" />
-    <h3>CAMISA TREINO GOLEIRO BANGU ROXO - KAPPA</h3>
-    <p>R$ 199,99</p>
-    <button 
-      class="add-to-cart"
-      data-id="2"
-      data-name="Camisa Treino Goleiro Bangu Roxo - Kappa"
-      data-price="199.99">
-      Adicionar ao Carrinho
-    </button>
-  </div>
-
-  <!-- Modal CAMISA TREINO GOLEIRO BANGU ROXO - KAPPA -->
-  <div id="modal-2" class="modal-produto" style="display:none;">
-    <div class="modal-content modal-flex">
-      <span class="close-modal" id="close-modal-2">&times;</span>
-      <div class="modal-left">
-        <img src="img/ImagensSemFundo/CamisaGoleiro-Photoroom.png" alt="Camisa Treino Goleiro Bangu Roxo 1" class="modal-main-img" />
-        <div class="modal-thumbs">
-          <img src="img/ImagensSemFundo/CamisaGoleiro-Photoroom.png" alt="Camisa Treino Goleiro Bangu Roxo 1" />
-          <img src="img/CamisaBanguRoxa.png" alt="Camisa Treino Goleiro Bangu Roxo 2" />
-        </div>
-      </div>
-      <div class="modal-right">
-        <h2 style="font-size:2em; margin-bottom:10px; color:#d32f2f;">Camisa Treino Goleiro Bangu Roxo - Kappa</h2>
-        <p style="color:#d32f2f; font-size:1.5em; font-weight:bold; margin:0;">R$199,99 no pix</p>
-        <p style="color:#aaa; margin:0 0 15px 0;">ou 2x de R$ 100,00 no cartão</p>
-        <div style="margin-bottom:15px;">
-          <span style="font-weight:bold;">Medida do produto:</span><br>
-          <div class="modal-tamanhos">
-            <button class="tamanho-btn">PP</button>
-            <button class="tamanho-btn">P</button>
-            <button class="tamanho-btn">M</button>
-            <button class="tamanho-btn">G</button>
-            <button class="tamanho-btn">GG</button>
-          </div>
-        </div>
-        <button 
-          class="add-to-cart modal-add-cart"
-          data-id="2"
-          data-name="Camisa Treino Goleiro Bangu Roxo - Kappa"
-          data-price="199.99">
-          Adicionar ao Carrinho
-        </button>
-        <ul class="modal-beneficios">
-          <li>Compra confiável <span>👍</span></li>
-          <li>Entrega rápida e eficiente <span>👍</span></li>
-          <li>Produtos de alta qualidade <span>👍</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="modal-backdrop"></div>
-  </div>
-
-  <div class="produto" data-id="3">
-    <img src="img/ImagensSemFundo/CamisaBanguBranca.png" alt="Camisa Oficial 3" class="produto-img" id="open-modal-3" style="cursor:pointer;" />
-    <h3>CAMISA KOMBAT BANGU II BRANCA - KAPPA</h3>
-    <p>R$ 249,99</p>
-    <button 
-      class="add-to-cart"
-      data-id="3"
-      data-name="Camisa Kombat Bangu II Branca - Kappa"
-      data-price="249.99">
-      Adicionar ao Carrinho
-    </button>
-  </div>
-
-  <!-- Modal CAMISA KOMBAT BANGU II BRANCA - KAPPA -->
-  <div id="modal-3" class="modal-produto" style="display:none;">
-    <div class="modal-content modal-flex">
-      <span class="close-modal" id="close-modal-3">&times;</span>
-      <div class="modal-left">
-        <img src="img/ImagensSemFundo/CamisaBanguBranca.png" alt="Camisa Kombat Bangu II Branca 1" class="modal-main-img" />
-        <div class="modal-thumbs">
-          <img src="img/ImagensSemFundo/CamisaBanguBranca.png" alt="Camisa Kombat Bangu II Branca 1" />
-          <img src="img/BanguBranca2.png" alt="Camisa Kombat Bangu II Branca 2" />
-        </div>
-      </div>
-      <div class="modal-right">
-        <h2 style="font-size:2em; margin-bottom:10px; color:#d32f2f;">Camisa Kombat Bangu II Branca - Kappa</h2>
-        <p style="color:#d32f2f; font-size:1.5em; font-weight:bold; margin:0;">R$249,99 no pix</p>
-        <p style="color:#aaa; margin:0 0 15px 0;">ou 2x de R$ 125,00 no cartão</p>
-        <div style="margin-bottom:15px;">
-          <span style="font-weight:bold;">Medida do produto:</span><br>
-          <div class="modal-tamanhos">
-            <button class="tamanho-btn">PP</button>
-            <button class="tamanho-btn">P</button>
-            <button class="tamanho-btn">M</button>
-            <button class="tamanho-btn">G</button>
-            <button class="tamanho-btn">GG</button>
-          </div>
-        </div>
-        <button 
-          class="add-to-cart modal-add-cart"
-          data-id="3"
-          data-name="Camisa Kombat Bangu II Branca - Kappa"
-          data-price="249.99">
-          Adicionar ao Carrinho
-        </button>
-        <ul class="modal-beneficios">
-          <li>Compra confiável <span>👍</span></li>
-          <li>Entrega rápida e eficiente <span>👍</span></li>
-          <li>Produtos de alta qualidade <span>👍</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="modal-backdrop"></div>
-  </div>
-
-  <div class="produto" data-id="4">
-    <img src="img/ImagensSemFundo/bermudaviagem-Photoroom.png" alt="Bermuda Viagem" class="produto-img" id="open-modal-4" style="cursor:pointer;" />
-    <h3>BERMUDA VIAGEM ATLETA BANGU - KAPPA</h3>
-    <p>R$ 100,00</p>
-    <button 
-      class="add-to-cart"
-      data-id="4"
-      data-name="Bermuda Viagem Atleta Bangu - Kappa"
-      data-price="100.00">
-      Adicionar ao Carrinho
-    </button>
-  </div>
-
-  <!-- Modal BERMUDA VIAGEM ATLETA BANGU - KAPPA -->
-  <div id="modal-4" class="modal-produto" style="display:none;">
-    <div class="modal-content modal-flex">
-      <span class="close-modal" id="close-modal-4">&times;</span>
-      <div class="modal-left">
-        <img src="img/ImagensSemFundo/bermudaviagem-Photoroom.png" alt="Bermuda Viagem 1" class="modal-main-img" />
-        <div class="modal-thumbs">
-          <img src="img/ImagensSemFundo/bermudaviagem-Photoroom.png" alt="Bermuda Viagem 1" />
-          <img src="img/BermudaBangu2.png" alt="Bermuda Viagem 2" />
-        </div>
-      </div>
-      <div class="modal-right">
-        <h2 style="font-size:2em; margin-bottom:10px; color:#d32f2f;">Bermuda Viagem Atleta Bangu - Kappa</h2>
-        <p style="color:#d32f2f; font-size:1.5em; font-weight:bold; margin:0;">R$100,00 no pix</p>
-        <p style="color:#aaa; margin:0 0 15px 0;">ou 2x de R$ 50,00 no cartão</p>
-        <div style="margin-bottom:15px;">
-          <span style="font-weight:bold;">Medida do produto:</span><br>
-          <div class="modal-tamanhos">
-            <button class="tamanho-btn">PP</button>
-            <button class="tamanho-btn">P</button>
-            <button class="tamanho-btn">M</button>
-            <button class="tamanho-btn">G</button>
-            <button class="tamanho-btn">GG</button>
-          </div>
-        </div>
-        <button 
-          class="add-to-cart modal-add-cart"
-          data-id="4"
-          data-name="Bermuda Viagem Atleta Bangu - Kappa"
-          data-price="100.00">
-          Adicionar ao Carrinho
-        </button>
-        <ul class="modal-beneficios">
-          <li>Compra confiável <span>👍</span></li>
-          <li>Entrega rápida e eficiente <span>👍</span></li>
-          <li>Produtos de alta qualidade <span>👍</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="modal-backdrop"></div>
-  </div>
-
-  <div class="produto" data-id="5">
-    <img src="img/croppedkombatBangu.webp" alt="Cropped Kombat Bangu" class="produto-img" id="open-modal-5" style="cursor:pointer;" />
-    <h3>CROPPED KOMBAT BANGU 24 BRANCO - KAPPA</h3>
-    <p>R$ 149,00</p>
-    <button 
-      class="add-to-cart"
-      data-id="5"
-      data-name="Cropped Kombat Bangu 24 Branco - Kappa"
-      data-price="149.00">
-      Adicionar ao Carrinho
-    </button>
-  </div>
-
-  <!-- Modal Cropped Kombat Bangu 24 Branco - Kappa -->
-  <div id="modal-5" class="modal-produto" style="display:none;">
-    <div class="modal-content modal-flex">
-      <span class="close-modal" id="close-modal-5">&times;</span>
-      <div class="modal-left">
-        <img src="img/croppedkombatBangu.webp" alt="Cropped Kombat Bangu 1" class="modal-main-img" />
-        <div class="modal-thumbs">
-          <img src="img/croppedkombatBangu.webp" alt="Cropped Kombat Bangu 1" />
-          <img src="img/cropedd bangu 3.webp" alt="Cropped Kombat Bangu 2" />
-        </div>
-      </div>
-      <div class="modal-right">
-        <h2 style="font-size:2em; margin-bottom:10px;">Cropped Combat Bangu 24 Branco - Kappa</h2>
-        <p style="color:#d32f2f; font-size:1.5em; font-weight:bold; margin:0;">R$149,00 no pix</p>
-        <p style="color:#aaa; margin:0 0 15px 0;">ou 2x de R$ 76,00 no cartão</p>
-        <div style="margin-bottom:15px;">
-          <span style="font-weight:bold;">Medida do produto:</span><br>
-          <div class="modal-tamanhos">
-            <button class="tamanho-btn">PP</button>
-            <button class="tamanho-btn">P</button>
-            <button class="tamanho-btn">M</button>
-            <button class="tamanho-btn">G</button>
-            <button class="tamanho-btn">GG</button>
-          </div>
-        </div>
-        <button 
-          class="add-to-cart modal-add-cart"
-          data-id="5"
-          data-name="Cropped Kombat Bangu 24 Branco - Kappa"
-          data-price="149.00">
-          Adicionar ao Carrinho
-        </button>
-        <ul class="modal-beneficios">
-          <li>Compra confiável <span>👍</span></li>
-          <li>Entrega rápida e eficiente <span>👍</span></li>
-          <li>Produtos de alta qualidade <span>👍</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="modal-backdrop"></div>
-  </div>
-
-  <div class="produto" data-id="6">
-    <img src="img/CamisaGoleiroVerdeaguaBangu.webp" alt="Camisa Goleiro Verde Água" class="produto-img" id="open-modal-6" style="cursor:pointer;" />
-    <h3>CAMISA GOLEIRO BANGU VERDE ÁGUA - KAPPA</h3>
-    <p>R$ 189,00</p>
-    <button 
-      class="add-to-cart"
-      data-id="6"
-      data-name="Camisa Goleiro Bangu Verde Água - Kappa"
-      data-price="189.00">
-      Adicionar ao Carrinho
-    </button>
-  </div>
-
-  <!-- Modal CAMISA GOLEIRO BANGU VERDE ÁGUA - KAPPA -->
-  <div id="modal-6" class="modal-produto" style="display:none;">
-    <div class="modal-content modal-flex">
-      <span class="close-modal" id="close-modal-6">&times;</span>
-      <div class="modal-left">
-        <img src="img/CamisaGoleiroVerdeaguaBangu.webp" alt="Camisa Goleiro Verde Água 1" class="modal-main-img" />
-        <div class="modal-thumbs">
-          <img src="img/CamisaGoleiroVerdeaguaBangu.webp" alt="Camisa Goleiro Verde Água 1" />
-          <img src="img/CamisaBanguVerde2.png" alt="Camisa Goleiro Verde Água 2" />
-        </div>
-      </div>
-      <div class="modal-right">
-        <h2 style="font-size:2em; margin-bottom:10px; color:#d32f2f;">Camisa Goleiro Bangu Verde Água - Kappa</h2>
-        <p style="color:#d32f2f; font-size:1.5em; font-weight:bold; margin:0;">R$189,00 no pix</p>
-        <p style="color:#aaa; margin:0 0 15px 0;">ou 2x de R$ 95,00 no cartão</p>
-        <div style="margin-bottom:15px;">
-          <span style="font-weight:bold;">Medida do produto:</span><br>
-          <div class="modal-tamanhos">
-            <button class="tamanho-btn">PP</button>
-            <button class="tamanho-btn">P</button>
-            <button class="tamanho-btn">M</button>
-            <button class="tamanho-btn">G</button>
-            <button class="tamanho-btn">GG</button>
-          </div>
-        </div>
-        <button 
-          class="add-to-cart modal-add-cart"
-          data-id="6"
-          data-name="Camisa Goleiro Bangu Verde Água - Kappa"
-          data-price="189.00">
-          Adicionar ao Carrinho
-        </button>
-        <ul class="modal-beneficios">
-          <li>Compra confiável <span>👍</span></li>
-          <li>Entrega rápida e eficiente <span>👍</span></li>
-          <li>Produtos de alta qualidade <span>👍</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="modal-backdrop"></div>
-  </div>
+  <?php endforeach; ?>
+  <?php if (empty($produtos)): ?>
+    <p>Nenhum produto encontrado.</p>
+  <?php endif; ?>
+</div>
     </section>
   </main>
 
@@ -825,5 +561,12 @@ document.addEventListener('DOMContentLoaded', function(){
 })();
 });
   </script>
+    <div id="login-modal" class="modal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 10px; text-align: center; position: relative;">
+            <span class="close-button" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; position: absolute; right: 10px; top: 5px;">&times;</span>
+            <p style="font-size: 1.2em; margin-top: 20px;">Você precisa estar logado para adicionar produtos ao carrinho</p>
+            <button id="login-modal-button" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; margin-top: 20px;">Fazer Login</button>
+        </div>
+    </div>
 </body>
 </html>

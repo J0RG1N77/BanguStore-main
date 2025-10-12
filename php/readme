@@ -1,0 +1,9 @@
+inserir produtos no banco:
+
+INSERT INTO produtos (nome, descricao, preco, imagemURL, estoque) VALUES
+('CAMISA OFICIAL BANGU 24 KOMBAT MASCULINA', 'Camisa oficial do Bangu Atlético Clube, modelo Kombat 24 masculina.', 249.99, 'img/ImagensSemFundo/camisa kombat masculina.png', 10),
+('CAMISA TREINO GOLEIRO BANGU ROXO - KAPPA', 'Camisa de treino de goleiro do Bangu, cor roxa, da marca Kappa.', 199.99, 'img/ImagensSemFundo/CamisaGoleiro-Photoroom.png', 10),
+('CAMISA KOMBAT BANGU II BRANCA - KAPPA', 'Camisa Kombat Bangu II, cor branca, da marca Kappa.', 249.99, 'img/ImagensSemFundo/CamisaBanguBranca.png', 10),
+('BERMUDA VIAGEM ATLETA BANGU - KAPPA', 'Bermuda de viagem para atletas do Bangu, da marca Kappa.', 100.00, 'img/ImagensSemFundo/bermudaviagem-Photoroom.png', 10),
+('CROPPED KOMBAT BANGU 24 BRANCO - KAPPA', 'Cropped Kombat Bangu 24, cor branca, da marca Kappa.', 149.00, 'img/croppedkombatBangu.webp', 10),
+('CAMISA GOLEIRO BANGU VERDE ÁGUA - KAPPA', 'Camisa de goleiro do Bangu, cor verde água, da marca Kappa.', 189.00, 'img/CamisaGoleiroVerdeaguaBangu.webp', 10);

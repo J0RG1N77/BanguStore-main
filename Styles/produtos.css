@@ -228,11 +228,45 @@ footer p {
 }
 
 .modal-content {
-  background-color: #fefefe;
+ background-color: #fefefe;
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
+  width: 50%;
+  max-width: 400px;
+}
+
+body.dark-theme .modal-content {
+  background-color: #333333;
+  border-color: #555;
+  color: #ffffff;
+}
+
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+body.dark-theme .close-button {
+  color: #ffffff;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: rgb(255, 0, 0);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+body.dark-theme .modal-content p {
+  color: #ffffff;
+}
+
+body.dark-theme #login-modal-button {
+  background-color: #007bff;
+  color: #ffffff;
 }
 
 .close {
