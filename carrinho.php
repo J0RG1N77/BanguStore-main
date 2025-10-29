@@ -54,7 +54,7 @@ if (!$isLoggedIn) {
     .dropdown li{padding:10px 14px;cursor:pointer;color:#000;border-radius:6px}
     .dropdown li a{color:inherit;text-decoration:none;display:block}
     .dropdown li:hover{background:#f5f5f5}
-    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:50}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:9999}
     .modal .modal-content{background:#fff;padding:18px;border-radius:8px;max-width:520px;width:90%;box-shadow:0 10px 30px rgba(0,0,0,0.2);position:relative}
     .modal .modal-content label{display:block;margin-bottom:8px;font-size:14px}
     .modal .modal-content input{width:100%;padding:8px;margin-top:4px;border:1px solid #ccc;border-radius:6px}
@@ -131,18 +131,7 @@ if (!$isLoggedIn) {
       <div class="carrinho-summary">
         <h3 class="summary-title">Resumo do Pedido</h3>
 
-        <!-- Campos de cupom e CEP -->
-        <div style="display:flex;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
-          <div>
-            <label for="campo-cep" style="font-weight:bold;">Calcule o Frete:</label>
-            <div style="display:flex;gap:8px;">
-              <input type="text" id="campo-cep" placeholder="Digite seu CEP" style="width:120px;">
-              <button type="button" id="calcular-frete">Calcular</button>
-              <button type="button" id="limpar-frete">Limpar</button>
-            </div>
-            <span id="cep-msg" style="color:#009688;font-size:13px;display:block;margin-top:6px;"></span>
-          </div>
-        </div>
+
 
         <div class="summary-row">
           <span class="summary-label">Subtotal (<span id="qtd-itens">0</span> itens)</span>
@@ -183,15 +172,7 @@ if (!$isLoggedIn) {
   <!-- =========================
        Footer
        ========================= -->
-  <footer>
-    <p>&copy; 2024 Bangu Store. Todos os direitos reservados.</p>
-    <img src="img/logo-1701858752-1719005234-37cf381cc5c27eb83f33c1b2094320a91719005235-320-0.webp" alt="Bangu Atlético Clube" width="80" height="auto" />
-    <div class="contato">
-      <p>Estamos à disposição para atender você!</p>
-      <p><a href="https://wa.me/+5521989496516?text=MENSAGEM" target="_blank">21989496516</a></p>
-      <p><a href="mailto:bangustore7@gmail.com">bangustore7@gmail.com</a></p>
-    </div>
-  </footer>
+
 
   <!-- =========================
        Scripts
@@ -205,14 +186,14 @@ if (!$isLoggedIn) {
   <script src="JavaScript/finalizarcompra.js"></script>
 
   <script>
-    (function(){
-      const openBtn = document.getElementById('finalizar-compra');
+    document.addEventListener('DOMContentLoaded', function() {
+        (function(){
       const modal = document.getElementById('checkout-modal');
-      const cancelBtn = document.getElementById('checkout-cancel');
+      const openBtn = document.getElementById('finalizar-compra');
       const closeBtn = document.getElementById('checkout-close');
+      const cancelBtn = document.getElementById('checkout-cancel');
       const cartInput = document.getElementById('checkout-cart-data');
       const form = document.getElementById('checkout-form');
-      const summaryEl = document.getElementById('checkout-summary');
 
       const cepInput = document.getElementById('campo-cep');
       const calcBtn = document.getElementById('calcular-frete');
@@ -246,43 +227,16 @@ if (!$isLoggedIn) {
         return cart;
       }
 
-      function renderSummary(cart) {
-        if (!Array.isArray(cart) || cart.length === 0) {
-          summaryEl.textContent = 'Carrinho vazio';
-          subtotalEl.textContent = formatCurrencyBR(0);
-          qtdItensEl.textContent = '0';
-          recalcTotal();
-          return;
-        }
-        let html = '';
-        let total = 0;
-        let totalQty = 0;
-        cart.forEach(it => {
-          const qty = (it.qty || 1);
-          const lineTotal = qty * (it.price || 0);
-          totalQty += qty;
-          total += lineTotal;
-          html += `<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>${escapeHtml(it.name)}</span><strong>R$ ${lineTotal.toFixed(2).replace('.',',')}</strong></div>`;
-        });
-        html += `<hr style="border:none;border-top:1px solid #eee;margin:8px 0;">`;
-        html += `<div style="display:flex;justify-content:space-between;font-weight:600;"><span>Total</span><span>R$ ${total.toFixed(2).replace('.',',')}</span></div>`;
-        summaryEl.innerHTML = html;
-
-        subtotalEl.textContent = formatCurrencyBR(total);
-        qtdItensEl.textContent = String(totalQty);
-        recalcTotal();
-      }
-
       function escapeHtml(unsafe) {
-        return unsafe?.replace(/[&<>\\"']/g, function(m) { return {'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;',"'":'&#39;'}[m]; });
+        return unsafe?.replace(/[&<>\\"\']/g, function(m) { return {'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;',"'":'&#39;'}[m]; });
       }
 
       function parseCurrencyBR(text) {
         if (!text) return 0;
         text = String(text).trim();
-        text = text.replace(/^R\$\s?/, '');
+        text = text.replace(/^R\\$\\s?/, '');
         // remover pontos de milhares e trocar vírgula por ponto
-        text = text.replace(/\./g, '');
+        text = text.replace(/\\./g, '');
         text = text.replace(/,/g, '.');
         const n = parseFloat(text);
         return isNaN(n) ? 0 : n;
@@ -298,6 +252,41 @@ if (!$isLoggedIn) {
         const desconto = parseCurrencyBR(descontoEl.textContent);
         const tot = Math.max(0, subtotal + frete - desconto);
         totalEl.textContent = formatCurrencyBR(tot);
+      }
+
+      function renderSummary(cart, summaryEl) {
+        if (!summaryEl) return;
+        
+        // A função recalcTotal já está definida no escopo superior, não é necessário redefini-la aqui.
+        
+        if (!Array.isArray(cart) || cart.length === 0) {
+          summaryEl.textContent = 'Carrinho vazio';
+          const subtotalEl = document.querySelector('.subtotal');
+          const qtdItensEl = document.querySelector('.qtd-itens');
+          if (subtotalEl) subtotalEl.textContent = formatCurrencyBR(0);
+          if (qtdItensEl) qtdItensEl.textContent = '0';
+          if (typeof recalcTotal === 'function') recalcTotal();
+          return;
+        }
+        let html = '';
+        let total = 0;
+        let totalQty = 0;
+        cart.forEach(it => {
+          const qty = (it.qty || 1);
+          const lineTotal = qty * (it.price || 0);
+          totalQty += qty;
+          total += lineTotal;
+          html += `<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>${escapeHtml(it.name)}</span><strong>R$ ${lineTotal.toFixed(2).replace('.',',')}</strong></div>`;
+        });
+        html += `<hr style="border:none;border-top:1px solid #eee;margin:8px 0;">`;
+        html += `<div style="display:flex;justify-content:space-between;font-weight:600;"><span>Total</span><span>R$ ${total.toFixed(2).replace('.',',')}</span></div>`;
+        summaryEl.innerHTML = html;
+        
+        const subtotalEl = document.querySelector('.subtotal');
+        const qtdItensEl = document.querySelector('.qtd-itens');
+        if (subtotalEl) subtotalEl.textContent = formatCurrencyBR(total);
+        if (qtdItensEl) qtdItensEl.textContent = totalQty.toString();
+        if (typeof recalcTotal === 'function') recalcTotal();
       }
 
       // máscara simples de CEP: 00000-000
@@ -321,11 +310,12 @@ if (!$isLoggedIn) {
 
       // limpar frete
       clearBtn && clearBtn.addEventListener('click', function(){
-        const modal = document.getElementById('checkout-modal'); // Assumindo que o modal tem o ID 'checkout-modal'
-        const checkoutCepInput = document.getElementById('checkout-cep');
 
-        if (modal && modal.style.display === 'flex' && checkoutCepInput) {
-          checkoutCepInput.value = '';
+        if (modal && modal.style.display === 'flex') {
+          const checkoutCepInput = document.getElementById('checkout-cep');
+          if (checkoutCepInput) {
+            checkoutCepInput.value = '';
+          }
         } else if (cepInput) {
           cepInput.value = '';
         }
@@ -338,11 +328,15 @@ if (!$isLoggedIn) {
       openBtn && openBtn.addEventListener('click', function(e){
         e.preventDefault();
         const cart = getCartData();
-        cartInput.value = JSON.stringify(cart);
-        renderSummary(cart);
-        modal.style.display = 'flex';
-        document.getElementById('checkout-step-1').style.display = 'block'; // Mostrar passo 1
-        document.getElementById('checkout-step-2').style.display = 'none'; // Esconder passo 2
+        const cartInput = document.getElementById('checkout-cart-data');
+        const summaryEl = document.getElementById('checkout-summary');
+        if (cartInput) cartInput.value = JSON.stringify(cart);
+        if (summaryEl && typeof renderSummary === 'function') renderSummary(cart, summaryEl);
+        if (modal) modal.style.display = 'flex';
+        const step1 = document.getElementById('checkout-step-1');
+        const step2 = document.getElementById('checkout-step-2');
+        if (step1) step1.style.display = 'block'; // Mostrar passo 1
+        if (step2) step2.style.display = 'none'; // Esconder passo 2
         setTimeout(()=>{
           const checkoutCepInput = document.getElementById('checkout-cep');
           if (checkoutCepInput) {
@@ -405,25 +399,35 @@ if (!$isLoggedIn) {
           const response = await fetch('php/save_address.php', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Type': 'application/json'
             },
-            body: new URLSearchParams(addressData).toString()
+            body: JSON.stringify(addressData)
           });
 
           const result = await response.json();
 
-          if (result.success) {
-            alert(result.message);
-            document.getElementById('checkout-address-data').value = JSON.stringify(addressData); // Salvar dados do endereço para o próximo passo
+          if (response.ok) {
+            console.log('Endereço salvo com sucesso:', result);
+            // Transition to step 2
             document.getElementById('checkout-step-1').style.display = 'none';
             document.getElementById('checkout-step-2').style.display = 'block';
-            setTimeout(() => document.getElementById('checkout-email').focus(), 100);
+
+            // Set address data in hidden input for payment form
+            document.getElementById('checkout-address-data').value = JSON.stringify(addressData);
+
+            // Set cart data in hidden input for payment form
+            const cart = getCartData();
+            document.getElementById('payment-cart-data').value = JSON.stringify(cart);
+
+            // Optionally, focus on the first payment field
+            document.getElementById('checkout-email').focus();
+
           } else {
-            alert('Erro ao salvar endereço: ' + result.message);
+            alert('Erro ao salvar endereço: ' + (result.message || 'Erro desconhecido'));
           }
         } catch (error) {
-          console.error('Erro ao enviar dados do endereço:', error);
-          alert('Ocorreu um erro ao salvar o endereço. Tente novamente.');
+          console.error('Erro na requisição:', error);
+          alert('Erro de conexão ao tentar salvar o endereço.');
         }
       });
 
@@ -524,6 +528,7 @@ if (!$isLoggedIn) {
       });
 
     })();
+      });
   </script>
 
   <!-- Sincronizar estado de sessão do servidor para o cabeçalho do carrinho -->
@@ -750,70 +755,72 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 
   <!-- Checkout Modal de Duas Etapas -->
-  <div id="checkout-modal" class="modal" style="display:none; position:fixed; inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:9999;padding:20px;">
-    <div style="background:#fff;padding:20px;border-radius:12px;max-width:600px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.4);position:relative;font-family:Arial,Helvetica,sans-serif;">
-      <button id="checkout-close" aria-label="Fechar" style="position:absolute;right:14px;top:12px;background:transparent;border:none;font-size:22px;cursor:pointer;color:#666;">&times;</button>
-      <h2 style="margin:0 0 15px 0;font-size:22px;color:#222;text-align:center;">Finalizar Compra</h2>
+  <div id="checkout-modal" class="modal">
+    <div>
+      <button id="checkout-close" aria-label="Fechar" class="modal-close">&times;</button>
+      <h2>Finalizar Compra</h2>
+      <input type="hidden" id="checkout-cart-data" name="cart_data">
 
-      <!-- Etapa 1: Endereço -->
+      <!-- Etapa 1: Endereço de Entrega -->
       <div id="checkout-step-1">
-        <h3 style="margin:0 0 15px 0;font-size:18px;color:#333;">1. Endereço de Entrega</h3>
-        <form id="address-form" style="display:flex;flex-direction:column;gap:10px;">
-          <label style="font-weight:600;font-size:13px;color:#333;">CEP</label>
-          <input type="text" name="cep" id="checkout-cep" required placeholder="00000-000" style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+        <h3>1. Endereço de Entrega</h3>
+        <div class="address-form">
+          <label for="checkout-cep">CEP:</label>
+          <input type="text" id="checkout-cep" name="cep" required>
 
-          <label style="font-weight:600;font-size:13px;color:#333;">Rua</label>
-          <input type="text" name="rua" id="checkout-rua" required style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+          <label for="checkout-rua">Rua:</label>
+          <input type="text" id="checkout-rua" name="rua" required>
 
-          <div style="display:flex;gap:10px;">
-            <div style="flex:1;">
-              <label style="font-weight:600;font-size:13px;color:#333;">Número</label>
-              <input type="text" name="numero" id="checkout-numero" required style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
-            </div>
-            <div style="flex:2;">
-              <label style="font-weight:600;font-size:13px;color:#333;">Bairro</label>
-              <input type="text" name="bairro" id="checkout-bairro" required style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
-            </div>
-          </div>
+          <label for="checkout-numero">Número:</label>
+          <input type="text" id="checkout-numero" name="numero" required>
 
-          <label style="font-weight:600;font-size:13px;color:#333;">Cidade</label>
-          <input type="text" name="cidade" id="checkout-cidade" required style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+          <label for="checkout-complemento">Complemento (Opcional):</label>
+          <input type="text" id="checkout-complemento" name="complemento">
 
-          <label style="font-weight:600;font-size:13px;color:#333;">Estado (UF)</label>
-          <input type="text" name="estado" id="checkout-estado" required maxlength="2" style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+          <label for="checkout-bairro">Bairro:</label>
+          <input type="text" id="checkout-bairro" name="bairro" required>
 
-          <label style="font-weight:600;font-size:13px;color:#333;">Complemento (Opcional)</label>
-          <input type="text" name="complemento" id="checkout-complemento" style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+          <label for="checkout-cidade">Cidade:</label>
+          <input type="text" id="checkout-cidade" name="cidade" required>
 
-          <button type="button" id="next-step-button" style="padding:12px 20px;background:#b52a37;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;margin-top:15px;">Continuar para Pagamento</button>
-        </form>
+          <label for="checkout-estado">Estado (UF):</label>
+          <select id="checkout-estado" name="estado" required>
+            <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option>
+            <option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option>
+            <option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+            <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option>
+            <option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option>
+            <option value="SE">SE</option><option value="TO">TO</option>
+          </select>
+        </div>
+        <button type="button" id="next-step-button">Continuar para Pagamento</button>
       </div>
 
       <!-- Etapa 2: Pagamento -->
       <div id="checkout-step-2" style="display:none;">
-        <h3 style="margin:0 0 15px 0;font-size:18px;color:#333;">2. Dados de Pagamento</h3>
-        <form id="payment-form" method="POST" action="php/checkout.php" style="display:flex;flex-direction:column;gap:10px;">
-          <label style="font-weight:600;font-size:13px;color:#333;">E-mail para Nota Fiscal</label>
-          <input type="email" name="email" id="checkout-email" required style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+        <h3>2. Dados de Pagamento</h3>
+        <form id="payment-form" method="POST" action="php/checkout.php" class="modal form">
+          <label>E-mail para Nota Fiscal</label>
+          <input type="email" name="email" id="checkout-email" required>
 
-          <label style="font-weight:600;font-size:13px;color:#333;">Nome no Cartão</label>
-          <input type="text" name="card_name" id="checkout-card-name" required style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+          <label>Nome no Cartão</label>
+          <input type="text" name="card_name" id="checkout-card-name" required>
 
-          <label style="font-weight:600;font-size:13px;color:#333;">Número do Cartão</label>
-          <input type="text" name="card_number" id="checkout-card-number" inputmode="numeric" required placeholder="0000 0000 0000 0000" style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+          <label>Número do Cartão</label>
+          <input type="text" name="card_number" id="checkout-card-number" inputmode="numeric" required placeholder="0000 0000 0000 0000">
 
-          <div style="display:flex;gap:10px;">
-            <div style="flex:1;">
-              <label style="font-weight:600;font-size:13px;color:#333;">Validade (MM/AA)</label>
-              <input type="text" name="expiry" id="checkout-expiry" required placeholder="MM/AA" style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+          <div class="form-row">
+            <div>
+              <label>Validade (MM/AA)</label>
+              <input type="text" name="expiry" id="checkout-expiry" required placeholder="MM/AA">
             </div>
-            <div style="flex:1;">
-              <label style="font-weight:600;font-size:13px;color:#333;">CVV</label>
-              <input type="text" name="cvv" id="checkout-cvv" inputmode="numeric" required placeholder="123" style="padding:10px;border:1px solid #e3e3e3;border-radius:8px;width:100%;font-size:14px;">
+            <div>
+              <label>CVV</label>
+              <input type="text" name="cvv" id="checkout-cvv" inputmode="numeric" required placeholder="123">
             </div>
           </div>
 
-          <input type="hidden" name="cart_data" id="checkout-cart-data" value="[]">
+          <input type="hidden" name="cart_data" id="payment-cart-data" value="[]">
           <input type="hidden" name="address_data" id="checkout-address-data" value="[]">
 
           <div style="display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:15px;">
@@ -910,9 +917,12 @@ document.addEventListener('DOMContentLoaded', function(){
         return cart;
       }
 
-      function renderSummary(cart) {
+      function renderSummary(cart, summaryEl) {
         if (!Array.isArray(cart) || cart.length === 0) {
           summaryEl.textContent = 'Carrinho vazio';
+          if (subtotalEl) subtotalEl.textContent = formatCurrencyBR(0);
+          if (qtdItensEl) qtdItensEl.textContent = '0';
+          if (typeof recalcTotal === 'function') recalcTotal();
           return;
         }
         let html = '';
@@ -928,6 +938,10 @@ document.addEventListener('DOMContentLoaded', function(){
         html += `<hr style="border:none;border-top:1px solid #eee;margin:8px 0;">`;
         html += `<div style="display:flex;justify-content:space-between;font-weight:600;"><span>Total</span><span>R$ ${total.toFixed(2).replace('.',',')}</span></div>`;
         summaryEl.innerHTML = html;
+
+        if (subtotalEl) subtotalEl.textContent = formatCurrencyBR(total);
+        if (qtdItensEl) qtdItensEl.textContent = totalQty.toString();
+        if (typeof recalcTotal === 'function') recalcTotal();
       }
 
       function escapeHtml(unsafe) {
@@ -937,8 +951,9 @@ document.addEventListener('DOMContentLoaded', function(){
       function parseCurrencyBR(text) {
         if (!text) return 0;
         text = String(text).trim();
-        text = text.replace(/^R\$\s?/, '');
-        text = text.replace(/\./g, '');
+        text = text.replace(/^R\$\\s?/, '');
+        // remover pontos de milhares e trocar vírgula por ponto
+        text = text.replace(/\\./g, '');
         text = text.replace(/,/g, '.');
         const n = parseFloat(text);
         return isNaN(n) ? 0 : n;
@@ -949,23 +964,32 @@ document.addEventListener('DOMContentLoaded', function(){
       }
 
       function validateAddressForm() {
-        const fields = [cepInput, ruaInput, numeroInput, bairroInput, cidadeInput, estadoInput];
+        const fields = [
+          { input: cepInput, name: 'CEP', regex: /^\d{5}-\d{3}$/, message: 'Por favor, insira um CEP válido (formato XXXXX-XXX).' },
+          { input: ruaInput, name: 'Rua' },
+          { input: numeroInput, name: 'Número', type: 'numeric', message: 'Por favor, insira um número válido para o campo Número.' },
+          { input: complementoInput, name: 'Complemento', optional: true },
+          { input: bairroInput, name: 'Bairro' },
+          { input: cidadeInput, name: 'Cidade' },
+          { input: estadoInput, name: 'Estado' }
+        ];
+
         for (const field of fields) {
-          if (!field.value.trim()) {
-            alert(`Por favor, preencha o campo ${field.previousElementSibling.textContent.replace(':','').trim()}.`);
-            field.focus();
+          if (!field.optional && !field.input.value.trim()) {
+            alert(`Por favor, preencha o campo ${field.name}.`);
+            field.input.focus();
             return false;
           }
-        }
-        if (!/^\d{5}-\d{3}$/.test(cepInput.value.trim())) {
-          alert('Por favor, insira um CEP válido (formato XXXXX-XXX).');
-          cepInput.focus();
-          return false;
-        }
-        if (estadoInput.value.trim().length !== 2) {
-          alert('Por favor, insira a sigla do Estado com 2 caracteres.');
-          estadoInput.focus();
-          return false;
+          if (field.regex && !field.regex.test(field.input.value.trim())) {
+            alert(field.message);
+            field.input.focus();
+            return false;
+          }
+          if (field.type === 'numeric' && field.input.value.trim() && isNaN(Number(field.input.value.trim()))) {
+            alert(field.message);
+            field.input.focus();
+            return false;
+          }
         }
         return true;
       }
@@ -991,7 +1015,7 @@ document.addEventListener('DOMContentLoaded', function(){
         e.preventDefault();
         const cart = getCartData();
         cartInput.value = JSON.stringify(cart);
-        renderSummary(cart);
+        renderSummary(cart, summaryEl);
         modal.style.display = 'flex';
         step1.style.display = 'block'; // Mostrar passo 1
         step2.style.display = 'none'; // Esconder passo 2
@@ -1006,7 +1030,7 @@ document.addEventListener('DOMContentLoaded', function(){
         if (e.target === modal) modal.style.display = 'none';
       });
 
-      nextStepBtn && nextStepBtn.addEventListener('click', function(){
+      nextStepBtn && nextStepBtn.addEventListener('click', async function(){
         const cepInput = document.getElementById('checkout-cep');
         const ruaInput = document.getElementById('checkout-rua');
         const numeroInput = document.getElementById('checkout-numero');
@@ -1015,22 +1039,10 @@ document.addEventListener('DOMContentLoaded', function(){
         const cidadeInput = document.getElementById('checkout-cidade');
         const estadoInput = document.getElementById('checkout-estado');
 
-        function validateAddressForm() {
-          if (!cepInput || !ruaInput || !numeroInput || !bairroInput || !cidadeInput || !estadoInput) {
-            alert('Erro: Campos do endereço não encontrados.');
-            return false;
-          }
-          if (!cepInput.value.trim() || !ruaInput.value.trim() || !numeroInput.value.trim() || !bairroInput.value.trim() || !cidadeInput.value.trim() || !estadoInput.value.trim()) {
-            alert('Todos os campos obrigatórios do endereço devem ser preenchidos.');
-            return false;
-          }
-          return true;
-        }
-
         if (validateAddressForm()) {
           const addressData = {
             cep: cepInput.value.trim(),
-            rua: ruaInput.value.trim(),
+            logradouro: ruaInput.value.trim(),
             numero: numeroInput.value.trim(),
             complemento: complementoInput.value.trim(),
             bairro: bairroInput.value.trim(),
@@ -1038,44 +1050,40 @@ document.addEventListener('DOMContentLoaded', function(){
             estado: estadoInput.value.trim()
           };
 
-          const formData = new URLSearchParams();
-          for (const key in addressData) {
-            formData.append(key, addressData[key]);
-          }
+          try {
+            const response = await fetch('php/save_address.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(addressData)
+            });
 
-          fetch('php/save_address.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: formData.toString()
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              // Armazenar o address_id em um campo oculto no formulário de checkout
-              const checkoutForm = document.getElementById('checkout-form');
-              let addressIdInput = checkoutForm.querySelector('input[name="address_id"]');
-              if (!addressIdInput) {
-                addressIdInput = document.createElement('input');
-                addressIdInput.type = 'hidden';
-                addressIdInput.name = 'address_id';
-                checkoutForm.appendChild(addressIdInput);
-              }
-              addressIdInput.value = data.address_id;
+            const result = await response.json();
 
-              // Transicionar para o próximo passo (pagamento)
-              step1.style.display = 'none';
-              step2.style.display = 'block';
-              setTimeout(()=>emailInput.focus(), 100);
+            if (result.success) {
+              alert(result.message);
+              document.getElementById('checkout-address-data').value = JSON.stringify(addressData); // Salvar dados do endereço para o próximo passo
+              document.getElementById('checkout-step-1').style.display = 'none';
+              document.getElementById('checkout-step-2').style.display = 'block';
+
+              // Set address data in hidden input for payment form
+              document.getElementById('checkout-address-data').value = JSON.stringify(addressData);
+
+              // Set cart data in hidden input for payment form
+              const cart = getCartData();
+              document.getElementById('payment-cart-data').value = JSON.stringify(cart);
+
+              // Optionally, focus on the first payment field
+              document.getElementById('checkout-email').focus();
+
             } else {
-              alert(data.message);
+              alert('Erro ao salvar endereço: ' + (result.message || 'Erro desconhecido'));
             }
-          })
-          .catch(error => {
-            console.error('Erro ao salvar endereço:', error);
-            alert('Erro ao salvar endereço. Tente novamente.');
-          });
+          } catch (error) {
+            console.error('Erro na requisição:', error);
+            alert('Erro de conexão ao tentar salvar o endereço.');
+          }
         }
       });
 
@@ -1134,9 +1142,10 @@ document.addEventListener('DOMContentLoaded', function(){
       if (data && data.logged && data.user) {
         const u = { nomeCompleto: data.user.nome_completo || '', login: data.user.login || '', cpf: data.user.cpf || '' };
         localStorage.setItem('usuario', JSON.stringify(u));
-        const loggedKey = data.user.login || (data.user.nomeCompleto && data.user.nomeCompleto.split(' ')[0]) || '';
+        const loggedKey = data.user.login || (data.user.nome_completo && data.user.nome_completo.split(' ')[0]) || '';
         if (loggedKey) localStorage.setItem('loggedUser', loggedKey);
 
+        // inserir markup consistente com as outras páginas
         const userOptions = document.querySelector('.user-options');
         if (userOptions) {
           const displayName = (u.nomeCompleto || u.login || 'Usuário').split(' ')[0];
@@ -1156,70 +1165,51 @@ document.addEventListener('DOMContentLoaded', function(){
 
           const accountButton = document.getElementById('account-button');
           const accountDropdown = document.getElementById('account-dropdown');
+          const logoutItem = document.getElementById('logout');
+          const manageAccount = document.getElementById('manage-account');
 
+          // toggle dropdown
           if (accountButton && accountDropdown) {
-            accountButton.addEventListener('click', () => {
+            accountButton.addEventListener('click', function(e){
+              e.stopPropagation();
               accountDropdown.classList.toggle('hidden');
-            });
-            document.addEventListener('click', (e) => {
-              if (!e.target.closest('.account-container') && !accountDropdown.classList.contains('hidden')) {
-                accountDropdown.classList.add('hidden');
-              }
+              accountButton.setAttribute('aria-expanded', String(!accountDropdown.classList.contains('hidden')));
             });
           }
 
-          const logoutButton = document.getElementById('logout');
-          if (logoutButton) {
-            logoutButton.addEventListener('click', () => {
-              fetch('php/logout.php')
-                .then(() => {
-                  localStorage.removeItem('usuario');
+          // fechar ao clicar fora
+          document.addEventListener('click', function(e){
+            if (!e.target.closest('.account-container') && accountDropdown && !accountDropdown.classList.contains('hidden')) {
+              accountDropdown.classList.add('hidden');
+            }
+          });
+
+          // gerenciar conta (redireciona para página de login/gestão)
+          if (manageAccount) {
+            manageAccount.addEventListener('click', function(){
+              window.location.href = 'pag-login.html';
+            });
+          }
+
+          // logout: chamar endpoint e limpar localStorage
+          if (logoutItem) {
+            logoutItem.addEventListener('click', function(){
+              fetch('php/logout.php', { method: 'GET', credentials: 'same-origin' })
+                .finally(function(){
                   localStorage.removeItem('loggedUser');
+                  localStorage.removeItem('usuario');
                   window.location.reload();
                 });
             });
           }
         }
+      } else {
+        localStorage.removeItem('loggedUser');
       }
     })
     .catch(error => console.error('Erro ao buscar status do usuário:', error));
 });
   </script>
-
-  <!-- Modal de Checkout -->
-  <div id="checkout-modal" class="modal hidden">
-    <div class="modal-content">
-      <button id="checkout-close" class="modal-close">&times;</button>
-      <h2>Finalizar Compra</h2>
-
-      <form id="checkout-form" action="php/checkout.php" method="POST">
-        <!-- Passo 1: Endereço de Entrega -->
-        <div id="checkout-step-1">
-          <h3>1. Endereço de Entrega</h3>
-          <div class="address-form">
-            <label for="checkout-cep">CEP:</label>
-            <input type="text" id="checkout-cep" name="cep" required>
-
-            <label for="checkout-rua">Rua:</label>
-            <input type="text" id="checkout-rua" name="rua" required>
-
-            <label for="checkout-numero">Número:</label>
-            <input type="text" id="checkout-numero" name="numero" required>
-
-            <label for="checkout-complemento">Complemento (Opcional):</label>
-            <input type="text" id="checkout-complemento" name="complemento">
-
-            <label for="checkout-bairro">Bairro:</label>
-            <input type="text" id="checkout-bairro" name="bairro" required>
-
-            <label for="checkout-cidade">Cidade:</label>
-            <input type="text" id="checkout-cidade" name="cidade" required>
-
-            <label for="checkout-estado">Estado (UF):</label>
-            <input type="text" id="checkout-estado" name="estado" maxlength="2" required>
-          </div>
-          <button type="button" id="next-step-button">Continuar para Pagamento</button>
-        </div>
 
         <!-- Passo 2: Pagamento -->
         <div id="checkout-step-2" style="display:none;">

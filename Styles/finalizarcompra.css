@@ -77,8 +77,87 @@
   cursor: pointer;
 }
 
+
 .remover-item:hover {
   background: darkred;
+}
+
+/* Estilos para o Modal de Checkout */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal > div {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  position: relative;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.modal-close {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #666;
+}
+
+.modal h2 {
+  margin: 0 0 15px 0;
+  font-size: 22px;
+  color: #222;
+  text-align: center;
+}
+
+.modal h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #333;
+}
+
+.modal input[type="email"],
+.modal input[type="text"],
+.modal input[type="numeric"] {
+  padding: 10px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.modal .form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.modal .form-row > div {
+  flex: 1;
 }
 
 

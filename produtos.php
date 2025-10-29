@@ -95,7 +95,6 @@ $pdo = getPDO();
     <img src="<?= $produto['imagemURL'] ?>" alt="<?= htmlspecialchars($produto['nome']) ?>" class="produto-img" id="open-modal-<?= $produto['id_produto'] ?>" style="cursor:pointer;" />
     <h3><?= htmlspecialchars($produto['nome']) ?></h3>
     <p>R$ <?= $precoFormatado ?></p>
-    <p>Estoque: <?= $produto['estoque'] ?></p>
     <button 
       class="add-to-cart"
       data-id="<?= $produto['id_produto'] ?>">
