@@ -1,0 +1,6 @@
+# Ignorar ficheiros de marcação e estilo das estatísticas de linguagem
+*.html linguist-vendored
+
+# Se tiveres pastas específicas de bibliotecas ou assets, podes ignorar também
+assets/* linguist-vendored
+vendor/* linguist-vendored
