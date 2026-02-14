@@ -1,5 +1,5 @@
 <?php
-// db.php - conexão PDO reutilizável
+// db.php - conexão PDO reutilizável com o MySQL
 // Atualize DB_NAME, DB_USER e DB_PASS conforme seu ambiente XAMPP
 define('DB_HOST', '127.0.0.1');
 define('DB_PORT', 3306);
