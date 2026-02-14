@@ -1,6 +1,7 @@
-# Ignorar ficheiros de marcação e estilo das estatísticas de linguagem
-*.html linguist-vendored
+# Forçar o GitHub a desconsiderar apenas HTML e CSS das estatísticas
+*.html linguist-detectable=false
+*.css linguist-detectable=false
 
-# Se tiveres pastas específicas de bibliotecas ou assets, podes ignorar também
-assets/* linguist-vendored
-vendor/* linguist-vendored
+# Ignorar pastas de dependências e assets que não são código seu
+vendor/* linguist-detectable=false
+assets/* linguist-detectable=false
